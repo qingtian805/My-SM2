@@ -6,3 +6,4 @@ This repo stores its code.
 ## Introduce of files
 
 **notes.md** A studing note of basic knowledge.
+**uint256_t/...** uint256_u by Jason Lee @ calccrypto <https://github.com/calccrypto/uint256_t> (Forgive me for unknowing how to cite it)
