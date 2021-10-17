@@ -422,13 +422,13 @@ int main()
         cout << "Step 7 finished.\nAll progress finished correctly.\n\n";
         cout << "Verify successed." << endl;
 
-        big a, b, p, n, x, y;//椭圆曲线参数
-        epoint *g, *p1, *pA;
-        big r, s;//签名参数
-        big t, tmp;//step 5 参数
-        big x1, y1;//p1坐标
-        big xA, yA;//pA坐标
-        big R, e;//step 7 参数
+        //big a, b, p, n, x, y;//椭圆曲线参数
+        //epoint *g, *p1, *pA;
+        //big r, s;//签名参数
+        //big t, tmp;//step 5 参数
+        //big x1, y1;//p1坐标
+        //big xA, yA;//pA坐标
+        //big R, e;//step 7 参数
         mirkill(a);
         mirkill(b);
         mirkill(p);
