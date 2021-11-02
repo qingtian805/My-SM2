@@ -11,7 +11,7 @@ This repo stores its code.
 **sm2core.c** The main file of my project, contines the final version of My-SM2.  
 **test.cpp test2.cpp** These are the test file for debuging during my progress.  
 **mir\*.\*** MIRACL lib files. Using for educational propose  
-**uint256_t/\*** C type uint256 written by [calccrypto](https://github.com/calccrypto/uint256_t) originally used to deal with bignum problem. Now using MIRCAL lib.  
+**uint256_t/\*** C type uint256 written by [calccrypto](https://github.com/calccrypto/uint256_t) originally used to deal with bignum problem. Now using MIRACL lib.  
 
 ## Feature
 As for limited time and my poor code ability, the function of My-SM2 is very limited which means it can only verify keys.  
