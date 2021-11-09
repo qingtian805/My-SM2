@@ -84,7 +84,6 @@ int main()
         big x1, y1, k;//签名参数
         big r, e, tmp;//5
         big dA, und, s;//6
-        int rlen, slen;
 
         miracl *mip;//MIRACL系统地址
 
@@ -188,7 +187,6 @@ int main()
                 divide(tmp,n,n);//tmp = tmp (mod n)
                 copy(tmp,r);//r = tmp
 
-                rlen = big_to_bytes(0,r,rn,FALSE);
                 streamToString((unsigned char*)rn);
 
                 //compare
@@ -225,7 +223,6 @@ int main()
             mad(tmp,und,und,n,n,tmp);//tmp = (tmp * und) mod n
             copy(tmp,s);//s = tmp
 
-            slen = big_to_bytes(0,s,sn,FALSE);
             streamToString((unsigned char*)sn);
 
             zero(tmp);//tmp = 0
