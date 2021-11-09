@@ -44,8 +44,13 @@ void streamToString(unsigned char* stream){
 //计算用户其他信息Za，ZA应传入有65空间的字符串
 void calOtherInfo(char *ID,int IDlen,char *xA,char *yA,unsigned char* ZA)
 {
+    char ENTLA[3];
     char info[IDlen + 387] = "";//64 * 6 + 2 + 1 = 387
-    strncat(info,ID,2);//ENTLA取ID首两字符
+    int entlena = strlen(ID);
+    ENTLA[0] = entlena & 0x0F;
+    ENTLA[1] = (entlena & 0xF0) >> 4;
+    ENTLA[2] = '\0';
+    strcat(info,ENTLA);
     strcat(info,ID);
     strcat(info,an);
     strcat(info,bn);
@@ -187,8 +192,6 @@ int main()
                 divide(tmp,n,n);//tmp = tmp (mod n)
                 copy(tmp,r);//r = tmp
 
-                streamToString((unsigned char*)rn);
-
                 //compare
                 zero(tmp);//tmp = 0
                 j1 = mr_compare(r,tmp);//r = 0?
@@ -222,8 +225,6 @@ int main()
             }
             mad(tmp,und,und,n,n,tmp);//tmp = (tmp * und) mod n
             copy(tmp,s);//s = tmp
-
-            streamToString((unsigned char*)sn);
 
             zero(tmp);//tmp = 0
             j1 = mr_compare(s,tmp);//s = 0?
@@ -419,13 +420,6 @@ int main()
         cout << "Step 7 finished.\nAll progress finished correctly.\n\n";
         cout << "Verify successed." << endl;
 
-        //big a, b, p, n, x, y;//椭圆曲线参数
-        //epoint *g, *p1, *pA;
-        //big r, s;//签名参数
-        //big t, tmp;//step 5 参数
-        //big x1, y1;//p1坐标
-        //big xA, yA;//pA坐标
-        //big R, e;//step 7 参数
         mirkill(a);
         mirkill(b);
         mirkill(p);
