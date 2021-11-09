@@ -7,11 +7,13 @@ This repo stores its code.
 
 **README.md** Common ReadMe file.  
 **notes.md** A studing note of basic knowledge.  
-**sm3.c sm3.h** This is a SM3 project by another coder and you can find them on [here](https://blog.csdn.net/qq_36298219/article/details/85926747).  
+**sm3.c sm3.h** SM3 project by another coder and you can find them on [here](https://blog.csdn.net/qq_36298219/article/details/85926747).  
 **sm2core.c** The main file of my project, contines the final version of My-SM2.  
-**test.cpp** Test file for streamToString() and toNegative() function.
-**mir\*.\*** MIRACL lib files. Using for educational propose  
+**sm2.cpp** Will be developed as an advanced version of my sm2. All functions will be splited. In order to reuse for multiple times and reduce code length.  
+**test.cpp** Test file for streamToString() and toNegative() function.  
+**mir\*.\*** MIRACL lib files. Using for educational propose.  
 **uint256_t/\*** C type uint256 written by [calccrypto](https://github.com/calccrypto/uint256_t) originally used to deal with bignum problem. Now using MIRACL lib.  
+**TOTP.cpp** C++ version of TOTP using SM3.  
 
 ## Feature
 As for limited time and my poor code ability, the function of My-SM2 is very limited which means it can only verify keys.  
