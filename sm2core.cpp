@@ -20,24 +20,27 @@ char nn[65] = "FFFFFFFEFFFFFFFFFFFFFFFFFFFFFFFF7203DF6B21C6052B53BBF40939D54123"
 char xn[65] = "32C4AE2C1F1981195F9904466A39C9948FE30BBFF2660BE1715A4589334C74C7";
 char yn[65] = "BC3736A2F4F6779C59BDCEE36B692153D0A9877CC62A474002DF32E52139F0A0";
 
-//sm3补足函数，将比特流转换为字符串
-void streamToString(unsigned char* stream){
+void streamToString(unsigned char* stream,int streamlength, unsigned char* string){
+    //sm3补足函数，将比特流转换为字符串
+    //stream,streamlength -> string
+    //转换后的字符串存于相同字符串，请确保字符串长度为原长度的两倍+1
+    //长度为32字节的流需要65字节长的字符串
     int pm,pr;
-    stream[64] = '\0';
-    pr = 63;
-    for(pm = 31; pm>=0; pm--)
+    stream[streamlength * 2] = '\0';
+    pr = streamlength * 2 - 1;
+    for(pm = streamlength - 1; pm>=0; pm--)
     {
-        stream[pr] = stream[pm] & 0b00001111;//低4位
-        stream[pr] = stream[pr] + '0';
-        if(stream[pr] > '9'){
-            stream[pr] = stream[pr] + 7;
-        }
+        string[pr] = stream[pm] & 0b00001111;//低4位
+        if(string[pr] > 9)
+            stream[pr] = string[pr] + 55;//55='A'-10
+        else
+            string[pr] = string[pr] + '0';
         pr--;
-        stream[pr] = stream[pm] >> 4;//高4位
-        stream[pr] = stream[pr] + '0';
-        if(stream[pr] > '9'){
-            stream[pr] = stream[pr] + 7;
-        }
+        string[pr] = stream[pm] >> 4;//高4位
+        if(string[pr] > 9)
+            stream[pr] = string[pr] + 55;//55='A'-10
+        else
+            string[pr] = string[pr] + '0';
         pr--;
     }
 }
@@ -59,7 +62,7 @@ void calOtherInfo(char *ID,int IDlen,char *xA,char *yA,unsigned char* ZA)
     strcat(info,xA);
     strcat(info,yA);
     sm3((unsigned char*)info,IDlen+387,ZA);
-    streamToString(ZA);
+    streamToString(ZA,32,ZA);
 }
 
 int main()
@@ -130,7 +133,7 @@ int main()
 
         //step 2
         sm3((unsigned char*)_message,strlen(_message),(unsigned char*)en);
-        streamToString((unsigned char*)en);
+        streamToString((unsigned char*)en,32,(unsigned char*)en);
 
         cout << "Step 2 finished." << endl;
 
@@ -346,7 +349,7 @@ int main()
 
         //step 4
         sm3((unsigned char*)_message,strlen(_message),(unsigned char*)en);
-        streamToString((unsigned char*)en);
+        streamToString((unsigned char*)en,32,(unsigned char*)en);
 
         cout << "Step 4 finished.\nEntering step 5..." << endl;
 
