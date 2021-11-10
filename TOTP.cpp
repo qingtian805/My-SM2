@@ -5,7 +5,7 @@
 
 using namespace std;
 
-#define DEBUG true
+#define DEBUG false
 
 //参数设置 
 #define __KLEN 64
@@ -16,27 +16,6 @@ using namespace std;
     //时间间隔
 #define DIGEST 6
     //返回数字位数（DEC）
-
-void streamToString(unsigned char* stream){
-    int pm,pr;
-    stream[64] = '\0';
-    pr = 63;
-    for(pm = 31; pm>=0; pm--)
-    {
-        stream[pr] = stream[pm] & 0b00001111;//低4位
-        stream[pr] = stream[pr] + '0';
-        if(stream[pr] > '9'){
-            stream[pr] = stream[pr] + 7;
-        }
-        pr--;
-        stream[pr] = stream[pm] >> 4;//高4位
-        stream[pr] = stream[pr] + '0';
-        if(stream[pr] > '9'){
-            stream[pr] = stream[pr] + 7;
-        }
-        pr--;
-    }
-}
 
 namespace TOTPnp{
     time_t T1 = __T1;//TOTP TC时间间隔设置
@@ -81,16 +60,10 @@ bool TOTPnp::__Truncate(char *HMAC,char *cotp){
     unsigned int binary = 0;
     unsigned int otpp;
     offset = *(HMAC + 31) & 0xf;//offset 取最后一个字节的低4位
-    cout << offset << endl;
-    char HMACout[65];
-    strcpy(HMACout,HMAC);
-    streamToString((unsigned char*)HMACout);
-    cout << HMACout <<endl;
     binary = (HMAC[offset] & 0x7f) << 24;
     binary = binary | (HMAC[offset + 1]  << 16);
     binary = binary | (HMAC[offset + 2]  << 8);
     binary = binary | (HMAC[offset + 3] );
-    cout << binary << endl;
     otp = binary % (TOTPnp::__pow());
     otpp = otp;
     for(int i=1;i<=DIGEST;i++){
