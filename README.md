@@ -11,8 +11,7 @@ This repo stores its code.
 **sm2core.c** The main file of my project, contines the final version of My-SM2.  
 **sm2.cpp** Will be developed as an advanced version of my sm2. All functions will be splited. In order to reuse for multiple times and reduce code length.  
 **test.cpp** Test file for streamToString() and toNegative() function.  
-**mir\*.\*** MIRACL lib files. Using for educational propose.  
-**uint256_t/\*** C type uint256 written by [calccrypto](https://github.com/calccrypto/uint256_t) originally used to deal with bignum problem. Now using MIRACL lib.  
+**mir\*.\*** [MIRACL](https://github.com/miracl/MIRACL) lib files. Using for educational propose. In replace of [uint256_t](https://github.com/calccrypto/uint256_t) which was used to deal with bignum calculations.  
 **TOTP.cpp** C++ version of TOTP using SM3.  
 
 ## Feature
