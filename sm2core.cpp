@@ -17,8 +17,8 @@ char pn[65] = "FFFFFFFEFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF00000000FFFFFFFFFFFFFFFF"
 char an[65] = "FFFFFFFEFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF00000000FFFFFFFFFFFFFFFC";
 char bn[65] = "28E9FA9E9D9F5E344D5A9E4BCF6509A7F39789F515AB8F92DDBCBD414D940E93";
 char nn[65] = "FFFFFFFEFFFFFFFFFFFFFFFFFFFFFFFF7203DF6B21C6052B53BBF40939D54123";
-char xn[65] = "32C4AE2C1F1981195F9904466A39C9948FE30BBFF2660BE1715A4589334C74C7";
-char yn[65] = "BC3736A2F4F6779C59BDCEE36B692153D0A9877CC62A474002DF32E52139F0A0";
+char xGn[65] = "32C4AE2C1F1981195F9904466A39C9948FE30BBFF2660BE1715A4589334C74C7";
+char yGn[65] = "BC3736A2F4F6779C59BDCEE36B692153D0A9877CC62A474002DF32E52139F0A0";
 
 void streamToString(unsigned char* stream,int streamlength, unsigned char* string){
     //sm3补足函数，将比特流转换为字符串
@@ -49,7 +49,7 @@ void calOtherInfo(char *ID,int IDlen,char *xA,char *yA,unsigned char* ZA)
 {
     char ENTLA[3];
     char info[IDlen + 387] = "";//64 * 6 + 2 + 1 = 387
-    int entlena = strlen(ID);
+    int entlena = IDlen * 8;
     ENTLA[0] = entlena & 0x0F;
     ENTLA[1] = (entlena & 0xF0) >> 4;
     ENTLA[2] = '\0';
@@ -57,8 +57,8 @@ void calOtherInfo(char *ID,int IDlen,char *xA,char *yA,unsigned char* ZA)
     strcat(info,ID);
     strcat(info,an);
     strcat(info,bn);
-    strcat(info,xn);
-    strcat(info,yn);
+    strcat(info,xGn);
+    strcat(info,yGn);
     strcat(info,xA);
     strcat(info,yA);
     sm3((unsigned char*)info,IDlen+387,ZA);
@@ -163,8 +163,8 @@ int main()
 	            cinstr(a,an);
                 cinstr(b,bn);
 	            cinstr(n,nn);
-	            cinstr(x,xn);
-                cinstr(y,yn);
+	            cinstr(x,xGn);
+                cinstr(y,yGn);
 
                 //初始化椭圆曲线
 	            ecurve_init(a,b,p,MR_PROJECTIVE);   
@@ -211,8 +211,6 @@ int main()
 
             cinstr(dA,dAn);
 
-            char negative[65];
-
             incr(dA,1,und);//und = 1 + dA
             xgcd(und,n,und,und,und);///und = 1/und (mod n)
 
@@ -234,6 +232,11 @@ int main()
         }while(j1 == 0);//s = 0?
 
         cout << "Progress finished.\nPrinting results..." << endl;
+
+        big_to_bytes(0,r,rn,FALSE);
+        streamToString((unsigned char*)rn,32,(unsigned char*)rn);
+        big_to_bytes(0,s,sn,FALSE);
+        streamToString((unsigned char*)sn,32,(unsigned char*)sn);
 
         int j;
     	cout << "签名r:\n" << rn << endl;
@@ -388,8 +391,8 @@ int main()
         cinstr(p,pn);
         cinstr(a,an);
         cinstr(b,bn);
-        cinstr(x,xn);
-        cinstr(y,yn);
+        cinstr(x,xGn);
+        cinstr(y,yGn);
 
         cinstr(xA,xAn);
         cinstr(yA,yAn);
@@ -448,3 +451,8 @@ int main()
     system("pause");
     return 0;
 }
+//12345678901234567890
+//09F9DF311E5421A150DD7D161E4BC5C672179FAD1833FC076BB08FF356F35020
+//CCEA490CE26775A52DC6EA718CC1AA600AED05FBF35E084A6632F6072DA9AD13
+//3945208F7B2144B13F36E38AC6D39F95889393692860B51A42FB81EF4DF7C5B8
+//
