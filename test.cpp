@@ -11,7 +11,7 @@ void streamToString(unsigned char* stream,int streamlength, unsigned char* strin
     //转换后的字符串存于相同字符串，请确保字符串长度为原长度的两倍+1
     //长度为32字节的流需要65字节长的字符串
     int pm,pr;
-    stream[streamlength * 2] = '\0';
+    string[streamlength * 2] = '\0';
     pr = streamlength * 2 - 1;
     for(pm = streamlength - 1; pm>=0; pm--)
     {

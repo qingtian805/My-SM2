@@ -14,7 +14,7 @@ using namespace SM2;
 
 void SM2::streamToString(byte* stream,int streamlength, byte* string){
     int pm,pr;
-    stream[streamlength * 2] = '\0';
+    string[streamlength * 2] = '\0';
     pr = streamlength * 2 - 1;
     for(pm = streamlength - 1; pm>=0; pm--)
     {
