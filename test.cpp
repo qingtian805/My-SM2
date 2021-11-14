@@ -17,13 +17,13 @@ void streamToString(unsigned char* stream,int streamlength, unsigned char* strin
     {
         string[pr] = stream[pm] & 0b00001111;//低4位
         if(string[pr] > 9)
-            stream[pr] = string[pr] + 55;
+            string[pr] = string[pr] + 55;
         else
             string[pr] = string[pr] + '0';
         pr--;
         string[pr] = stream[pm] >> 4;//高4位
         if(string[pr] > 9)
-            stream[pr] = string[pr] + 55;
+            string[pr] = string[pr] + 55;
         else
             string[pr] = string[pr] + '0';
         pr--;

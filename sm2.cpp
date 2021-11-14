@@ -20,13 +20,13 @@ void SM2::streamToString(byte* stream,int streamlength, byte* string){
     {
         string[pr] = stream[pm] & 0b00001111;//低4位
         if(string[pr] > 9)
-            stream[pr] = string[pr] + 55;//55='A'-10
+            string[pr] = string[pr] + 55;//55='A'-10
         else
             string[pr] = string[pr] + '0';
         pr--;
         string[pr] = stream[pm] >> 4;//高4位
         if(string[pr] > 9)
-            stream[pr] = string[pr] + 55;//55='A'-10
+            string[pr] = string[pr] + 55;//55='A'-10
         else
             string[pr] = string[pr] + '0';
         pr--;
