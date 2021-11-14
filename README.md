@@ -22,7 +22,7 @@ This repo stores its code.
 
 ### ./lib/
 
-**miracl.a** Complied MIRACL lib file.
+**libmiracl.a** Complied MIRACL lib file.
 
 ## Feature
 As for limited time and my poor code ability, the function of My-SM2 is very limited which means it can only verify keys.  
@@ -34,5 +34,5 @@ Some new features may be added.
 
 ### Developing
 
-A TOTP for future use. FINISHED
+A TOTP for future use. FINISHED  
 Split functions and use my newly learned techniques to build a new version EASIER DEBUGING and MORE FLEXABLE for reuse.  
