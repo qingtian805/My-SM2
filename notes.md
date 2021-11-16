@@ -112,7 +112,7 @@ SM2作为非对称密码算法，应该有两种应用环境：
 
 #### 椭圆曲线参数
 
-这些在国标第五章有所规定
+这些在国标第五章有所规定(原文复制出来全是全角 /脑壳疼)  
 素数$p$：FFFFFFFE FFFFFFFF FFFFFFFF FFFFFFFF FFFFFFFF 00000000 FFFFFFFF FFFFFFFF  
 系数$a$：FFFFFFFE FFFFFFFF FFFFFFFF FFFFFFFF FFFFFFFF 00000000 FFFFFFFF FFFFFFFC  
 系数$b$：28E9FA9E 9D9F5E34 4D5A9E4B CF6509A7 F39789F5 15AB8F92 DDBCBD41 4D940E93  
@@ -122,22 +122,35 @@ $x_G$：32C4AE2C 1F198119 5F990446 6A39C994 8FE30BBF F2660BE1 715A4589 334C74C7
 $y_G$：BC3736A2 F4F6779C 59BDCEE3 6B692153 D0A9877C C62A4740 02DF32E5 2139F0A0  
 $\ \ n$：FFFFFFFE FFFFFFFF FFFFFFFF FFFFFFFF 7203DF6B 21C6052B 53BBF409 39D54123
 
-#### 密钥对生成
+#### 密钥对生成\[签名\]
 
+*这个函数是一个概念，已经融合在步骤中了
 输入：一个有效的素域或扩域这个数必须是大于3的素数或2的m次方。  
 输出：密钥对（d,P）  
-a) 随机数发生器产生整数$d \in (1,n-2)$  
-b）计算点$P = (x_p,y_p) = [d]G$（倍点）  
-c）密钥对是（d,P），其中d为私钥，P为公钥。  
-ps:这里的倍点运算存在快速运算方式  
+1. 随机数发生器产生整数$d \in (1,n-2)$  
+2. 计算点$P = (x_p,y_p) = [d]G$（倍点）  
+3. 密钥对是（d,P），其中d为私钥，P为公钥。  
+ps:这里的倍点运算存在快速运算方式，从0开始自己写可以用  
 
-#### 用户其他信息($Z_A$)
+#### 用户其他信息($Z_A$)\[签名\]\[交换\]
 
 输入：用户$IDa$，椭圆曲线参数$a、b、x_G、y_G$，用户公钥$x_A、y_A$  
 输出：一个杂凑值  
 就一个公式：  
 $Z_A=H_{256}(ENTL_A||ID_A||a||b||x_G||y_G||x_A||y_A)$  
-一个参数：$ENTL_A$是由 $ID_A$ 的长度 $entlen_A$ 转换成的两个字节(整数转字符串)  
+一个参数：$ENTL_A$是由 $ID_A$ 的比特长度 $entlen_A$ 转换成的两个字节
+
+#### 密钥派生函数KDF\[交换\]\[加密\]
+
+输入：共享秘密比特串$Z$，要获得密钥长度$klen$  
+输出：输出$klen$长度的密钥数据比特串$K$  
+作用：不写一下感觉不好理解了。作用是从一个共享秘密比特串中派生出密钥数据。  
+1. 初始化32位计数器$ct$ = 0x00000001  
+2. 对$i$从1到$klen/v$执行：($v$是杂凑函数输出位数)  
+    1. $Ha_i = H_v(Z||ct)$  
+    2. $ct++$  
+3. 若klen/v是整数，令$Ha!_{\lceil klen/v \rceil}=Ha_{\lceil klen/v \rceil}$，否则令$Ha!_{\lceil klen/v \rceil}$为$Ha_{\lceil klen/v \rceil}$最左侧$(klen-(v*\lfloor klen/v \rfloor))$比特  
+4. 令$K=Ha_1||Ha_2||…||Ha_{\lceil klen/v \rceil-1}||Ha!_{\lceil klen/v \rceil}$  
   
 SM2另外涉及两种辅助算法：**密码杂凑函数、随机数生成函数**  
 这两个的要求标准中均是：使用国家密码管理局批准的   
@@ -151,24 +164,26 @@ SM2另外涉及两种辅助算法：**密码杂凑函数、随机数生成函数
 #### 签名
 
 待签名消息$M$  
-A1：首先是计算$\overline{M}=Z_A||M$；  
-A2：计算$e=H_v(\overline{M})$，并将$e$转换为整数  
-A3：生成随机数$k\in[1,n-1]$  
-A4：计算椭圆曲线点$(x_1,y_1)=[k]G$，并将$x_1$转换为整数  
-A5：计算$r=(e+x_1)mod\ n$，若$r=0$或$r+k=n$则返回 A3  
-A6：计算$s=((1+d_A)^{-1}\cdot(k-r\cdot d_A))mod\ n$，若$s=0$则返回 A3  
-A7：将$r、s$转换为字符串，输出签名$(r,s)$  
+1. 首先是计算$\overline{M}=Z_A||M$；  
+2. 计算$e=H_v(\overline{M})$，并将$e$转换为整数  
+3. 生成随机数$k\in[1,n-1]$  
+4. 计算椭圆曲线点$(x_1,y_1)=[k]G$，并将$x_1$转换为整数  
+5. 计算$r=(e+x_1)mod\ n$，若$r=0$或$r+k=n$则返回 A3  
+6. 计算$s=((1+d_A)^{-1}\cdot(k-r\cdot d_A))mod\ n$，若$s=0$则返回 A3  
+7. 将$r、s$转换为字符串，输出签名$(r,s)$  
 
 #### 验签
 
 收到的消息$M^\prime$、其数字签名$(r^\prime,s^\prime)$  
-B1：检验$r^\prime\in[1,n-1]$，不成立则不通过  
-B2：检验$s^\prime\in[1,n-1]$，不成立则不通过  
-B3：置$\overline{M}^\prime=Z_A||M^\prime$  
-B4：计算$e^\prime=H_v(\overline{M}^\prime)$并将$e$转换为整数   
-B5：将$r^\prime、s^\prime$转换为整数，计算$t=(r^\prime+s^\prime)mod\ n$，若$t=0$则不通过    
-B6：计算椭圆曲线点$(x_1^\prime,y_1^\prime)=[s^\prime]G+[t]P_A$  
-B7：将$x_1^\prime$转换为整数,计算$R=(e^\prime,x_1^\prime)mod\ n$，若$R=r^\prime$则验证成立，否则不成立  
+1. 检验$r^\prime\in[1,n-1]$，不成立则不通过  
+2. 检验$s^\prime\in[1,n-1]$，不成立则不通过  
+3. 置$\overline{M}^\prime=Z_A||M^\prime$  
+4. 计算$e^\prime=H_v(\overline{M}^\prime)$并将$e$转换为整数   
+5. 将$r^\prime、s^\prime$转换为整数，计算$t=(r^\prime+s^\prime)mod\ n$，若$t=0$则不通过    
+6. 计算椭圆曲线点$(x_1^\prime,y_1^\prime)=[s^\prime]G+[t]P_A$  
+7. 将$x_1^\prime$转换为整数,计算$R=(e^\prime,x_1^\prime)mod\ n$，若$R=r^\prime$则验证成立，否则不成立  
+
+### 密钥交换协议
 
 ### 非对称密码算法
 

@@ -5,7 +5,7 @@
 using std::cout;
 using std::endl;
 
-void streamToString(unsigned char* stream,int streamlength, unsigned char* string){
+void streamToString(unsigned char* stream,int streamlength, char* string){
     //sm3补足函数，将比特流转换为字符串
     //stream,streamlength -> string
     //转换后的字符串存于相同字符串，请确保字符串长度为原长度的两倍+1
@@ -29,26 +29,52 @@ void streamToString(unsigned char* stream,int streamlength, unsigned char* strin
         pr--;
     }
 }
-void toNegative(unsigned char* stream)
+void stringToStream(char* string,int stringlen,unsigned char* stream)
 {
-    int length, i;
-    length = strlen((char*)stream);
-    for(i = 0;i<length;i++){
-        stream[i] = ~stream[i];
+    int pm,pr;
+    if((stringlen % 2)!=0)
+    {
+        pm = stringlen/2;
     }
-    stream[length - 1] = stream[length - 1] + 1;
+    else
+    {
+        pm = stringlen/2 - 1;
+    }
+    pr = stringlen - 1;
+
+    while(pm >= 0){
+        if(string[pr] > '9')
+        {
+            stream[pm] = string[pr] - 55; 
+        }
+        else
+        {
+            stream[pm] = string[pr] - '0';
+        }
+        pr--;
+        if(string[pr] > '9')
+        {
+            stream[pm] = stream[pm] | (string[pr] - 55) << 4;
+        }
+        else
+        {
+            stream[pm] = stream[pm] | (string[pr] - '0') << 4;
+        }
+        pr--;
+        pm--;
+    }
 }
 
 int main(){
     unsigned char b[10] = "abcdefghi";
     unsigned char res[65] = "";
-    unsigned char origin[65] = "";
-    sm3(b,11,res);
-    strcpy((char*)origin,(char*)res);
-    streamToString(origin,32,origin);
+    char origin[65] = "";
+    unsigned char test[65] = "";
+    sm3(b,9,res);
+    streamToString(res,32,origin);
     cout << origin <<endl;
-    //toNegative(res);
-    //streamToString(res);
-    //cout << res << endl;
+    stringToStream(origin,64,test);
+    cout << origin << endl;
+    
     return 0;
 }

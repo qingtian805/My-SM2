@@ -1,8 +1,10 @@
-extern "C"{
+extern "C"
+{
 #include"miracl.h"
 }
 #include"sm2.hpp"
 #include<time.h>
+#include<math.h>
 #include<iostream>
 #include<stdlib.h>
 #include<memory.h>
@@ -12,45 +14,96 @@ extern "C"{
 using namespace std;
 using namespace SM2;
 
-void SM2::streamToString(byte* stream,int streamlength, byte* string){
+void SM2::streamToString(byte* stream,int streamlen, char* string)
+{
     int pm,pr;
-    string[streamlength * 2] = '\0';
-    pr = streamlength * 2 - 1;
-    for(pm = streamlength - 1; pm>=0; pm--)
+    string[streamlen * 2] = '\0';
+    pr = streamlen * 2 - 1;
+    
+    for(pm = streamlen - 1; pm>=0; pm--)
     {
         string[pr] = stream[pm] & 0b00001111;//低4位
         if(string[pr] > 9)
+        {
             string[pr] = string[pr] + 55;//55='A'-10
+        }
         else
+        {
             string[pr] = string[pr] + '0';
+        }
         pr--;
         string[pr] = stream[pm] >> 4;//高4位
         if(string[pr] > 9)
+        {
             string[pr] = string[pr] + 55;//55='A'-10
+        }
         else
+        {
             string[pr] = string[pr] + '0';
+        }
         pr--;
     }
 }
 
-void SM2::gen_Message(char* ZA,char* message,char* _message){ 
-    strcpy(_message,ZA);
-    strcat(_message,message);
+void SM2::stringToStream(char* string,int stringlen,unsigned char* stream)
+{
+    int pm,pr;
+    if((stringlen % 2)!=0)
+    {
+        pm = stringlen/2;
+    }
+    else
+    {
+        pm = stringlen/2 - 1;
+    }
+    pr = stringlen - 1;
+
+    while(pm >= 0){
+        if(string[pr] > '9')
+        {
+            stream[pm] = string[pr] - 55; 
+        }
+        else
+        {
+            stream[pm] = string[pr] - '0';
+        }
+        pr--;
+        if(string[pr] > '9')
+        {
+            stream[pm] = stream[pm] | (string[pr] - 55) << 4;
+        }
+        else
+        {
+            stream[pm] = stream[pm] | (string[pr] - '0') << 4;
+        }
+        pr--;
+        pm--;
+    }
 }
 
-void SM2::calE(char* _message,big e){
+void SM2::gen_Message(char* ZA,byte* message,int mlen,byte* _message)
+{
+    memcpy(_message,ZA,32);//偏移0-31复制为ZA
+    memcpy(_message+32,message,mlen);//偏移32-++复制为message
+}
+
+void SM2::calE(byte* _message,int _mlen,big e)
+{
     char en[65];
-    sm3((byte*)_message,strlen(_message),(byte*)en);
-    streamToString((byte*)en,32,(byte*)en);
+    sm3(_message,_mlen,(byte*)en);
+    streamToString((byte*)en,32,en);
     cinstr(e,en);
 }
 
-void SM2::genRandom(big k){
+void SM2::genRandom(big k)
+{
     big n;
 
     n = mirvar(0);
     cinstr(n,nn);
-    do{
+
+    do
+    {
     irand(time(NULL)+SEED);
     bigrand(n,k);// 0 <= k < n
     }while(is_zero(k));//是0则重新生成
@@ -58,7 +111,8 @@ void SM2::genRandom(big k){
     mirkill(n);
 }
 
-void SM2::calrt(big er,big x1s,big rt){
+void SM2::calrt(big er,big x1s,big rt)
+{
     big n,tmp;
 
     n = mirvar(0);
@@ -73,8 +127,8 @@ void SM2::calrt(big er,big x1s,big rt){
     mirkill(tmp);
 }
 
-//计算s==((1+dA)^-1·(k-r·dA))mod n
-void SM2::cals(big k,big dA,big r,big s){
+void SM2::cals(big k,big dA,big r,big s)
+{
     big tmp,und;
     big n;
 
@@ -86,10 +140,12 @@ void SM2::cals(big k,big dA,big r,big s){
     incr(dA,1,und);//und = 1+dA
     xgcd(und,n,und,und,und);//und = und^-1 mod n
     mad(r,dA,dA,n,n,tmp);//tmp = (r * dA) mod n
-    if(mr_compare(k,tmp) >= 0){//tmp = k - tmp
+    if(mr_compare(k,tmp) >= 0)//tmp = k - tmp
+    {
         subtract(k,tmp,tmp);
     }
-    else{
+    else
+    {
         subtract(n,tmp,tmp);
         add(k,tmp,tmp);
     }
@@ -100,7 +156,8 @@ void SM2::cals(big k,big dA,big r,big s){
     mirkill(n);
 }
 
-void SM2::calP1(big k,big x1){
+void SM2::calP1(big k,big x1)
+{
     big xG,yG;//椭圆曲线基点
     big a,b,p;//椭圆曲线参数
     big y1;//无用的y1
@@ -136,7 +193,8 @@ void SM2::calP1(big k,big x1){
     epoint_free(p1);
 }
 
-void SM2::cal_P1(big s,big t,big xA,big yA,big x1){
+void SM2::cal_P1(big s,big t,big xA,big yA,big x1)
+{
     big xG,yG;//椭圆曲线基点
     big a,b,p;//椭圆曲线参数
     big y1;//无用的_y1
@@ -175,7 +233,89 @@ void SM2::cal_P1(big s,big t,big xA,big yA,big x1){
     epoint_free(p1);
 }
 
-bool SM2::notIn_1n(big __x){
+bool SM2::__top(double x,int* top)
+{
+    double ipart;
+    double spart;
+
+    spart = modf(x,&ipart);
+
+    if(spart > 0)
+    {
+        *top = (int)ipart + 1;
+        return false;
+    }
+    else{
+        *top = (int)ipart;
+        return true;
+    }
+}
+
+int SM2::__top(double x)
+{
+    double ipart;
+    double spart;
+
+    spart = modf(x,&ipart);
+
+    if(spart > 0)
+    {
+        return (int)ipart + 1;
+    }
+    else
+    {
+        return (int)ipart;
+    }
+}
+
+int SM2::__floor(double x)
+{
+    double ipart;
+
+    modf(x,&ipart);
+
+    return (int)ipart;
+}
+
+void SM2::KDF(char* Z,int Zlen,double klen,char* key)
+{
+    unsigned int ct = 1;
+    int num;//top klen/v
+    bool isint = __top(klen/256,&num);//is int
+    byte Ha[num][33];
+    byte Htmp[Zlen + 5];
+    byte _Ha[33];//Ha!
+
+    for(int i = 0;i<num;i++)
+    {
+        strcpy((char*)Htmp,Z);//Htmp = Z
+        strcat((char*)Htmp,(char*)&ct);//Htmp = Z||ct
+        sm3(Htmp,Zlen + 4,Ha[i]);//H(Z||ct)
+
+        ct = ct + 1;
+    }
+
+    if(isint)
+    {
+        strcpy((char*)_Ha,(char*)Ha[num-1]);//Ha!=Ha[klen/v]top
+    }
+    else
+    {
+        int l = klen-(256*floor(klen/256));
+        int bl = l/8;
+        l = l % 8;
+        strcpy((char*)_Ha,(char*)Ha[num-1]);//Ha!=Ha[klen/v]top
+        memset(_Ha+bl+1,0,33-bl);
+        _Ha[bl] = _Ha[bl] >> 8-l;
+        _Ha[bl] = _Ha[bl] << 8-l;
+    }
+    for(int i = 0;i<num;i++){
+        strcat(key,(char*)Ha[i]);
+    }
+}
+
+bool SM2::notIn_1n(big __x)
+{
     big cmp0;//0
     big cmpn;//n
     bool res1,res2;
@@ -189,7 +329,8 @@ bool SM2::notIn_1n(big __x){
     return res1||res2; // ==0 || >=n
 }
 
-bool SM2::is_n(big __x){
+bool SM2::is_n(big __x)
+{
     big cmpn;
     bool res;
     cmpn = mirvar(0);
@@ -199,7 +340,8 @@ bool SM2::is_n(big __x){
     return res;// == n
 }
 
-bool SM2::is_zero(big __x){
+bool SM2::is_zero(big __x)
+{
     big cmp0;
     bool res;
     cmp0 = mirvar(0);
@@ -208,35 +350,39 @@ bool SM2::is_zero(big __x){
     return res;
 }
 
-bool SM2::is_equal(big __x,big __y){
+bool SM2::is_equal(big __x,big __y)
+{
     return (mr_compare(__x,__y) == 0);
 }
 
-void genZA(char *ID,char *xA,char *yA,char* ZA){
-    char ENTLA[3];
-    int IDlen = strlen(ID);
+void genZA(char *ID,int IDlen,char *xA,char *yA,char* ZA)
+{
+    char ENTLA[2];
     char info[IDlen + 387] = "";//64 * 6 + 2 + 1 = 387
     int entlena = IDlen * 8;
-    ENTLA[0] = entlena & 0x0F;
-    ENTLA[1] = (entlena & 0xF0) >> 4;
-    ENTLA[2] = '\0';
-    strcat(info,ENTLA);
-    strcat(info,ID);
-    strcat(info,an);
-    strcat(info,bn);
-    strcat(info,xGn);
-    strcat(info,yGn);
-    strcat(info,xA);
-    strcat(info,yA);
-    sm3((byte*)info,IDlen+387,(byte*)ZA);
-    streamToString((byte*)ZA,32,(byte*)ZA);
+    ENTLA[0] = entlena & 0xFF;
+    ENTLA[1] = (entlena & 0xFF00) >> 8;
+    memcpy(info,ENTLA,2);
+    //strcat(info,ID);
+    memcpy(info+2,ID,IDlen);
+    //strcat(info,an);
+    memcpy(info+IDlen+2,an,64);
+    //strcat(info,bn);
+    memcpy(info+IDlen+68,bn,64);
+    //strcat(info,xGn);
+    //strcat(info,yGn);
+    //strcat(info,xA);
+    //strcat(info,yA);
+    sm3((byte*)info,IDlen+386,(byte*)ZA);
 }
 
-void genSignment(char* ZA,char* dAn,char* message,int messagelen,char* rn,char* sn){
+void genSignment(char* ZA,char* dAn,unsigned char* message,int messagelen,char* rn,char* sn)
+{
     //init MIRACL
     miracl *mip;
     mip = mirsys(64,16);//16位
-    if(mip == NULL){
+    if(mip == NULL)
+    {
         cout << "MIRACL INIT FALTAL" << endl;
         exit(0);
     }
@@ -254,16 +400,19 @@ void genSignment(char* ZA,char* dAn,char* message,int messagelen,char* rn,char* 
     r = mirvar(0);
     s = mirvar(0);
     dA = mirvar(0);
-    char _message[messagelen + 65];
+    cinstr(dA,dAn);
+    byte _message[messagelen + 32];
 
     //step 1
-    SM2::gen_Message(ZA,(char*)message,_message);
+    SM2::gen_Message(ZA,message,messagelen,_message);
 
     //step 2
-    calE(_message,e);
+    calE(_message,messagelen+32,e);
 
-    do{
-        do{
+    do
+    {
+        do
+        {
             //step 3
             genRandom(k);
 
@@ -276,14 +425,13 @@ void genSignment(char* ZA,char* dAn,char* message,int messagelen,char* rn,char* 
             add(r,k,rk);//rk = r + k
         }while( is_zero(r) || is_n(rk));
         //step 6
-        cinstr(dA,dAn);
         cals(k,dA,r,s);
     }while(is_zero(s));
 
     big_to_bytes(0,r,rn,FALSE);
-    streamToString((byte*)rn,32,(byte*)rn);
+    streamToString((byte*)rn,32,rn);
     big_to_bytes(0,s,sn,FALSE);
-    streamToString((byte*)sn,32,(byte*)sn);
+    streamToString((byte*)sn,32,sn);
 
     mirkill(rk);
     mirkill(e);
@@ -295,7 +443,8 @@ void genSignment(char* ZA,char* dAn,char* message,int messagelen,char* rn,char* 
     mirexit();
 }
 
-bool verifySignment(char* ZA,char* xAn,char* yAn,char* message,int messagelen,char* rn,char* sn){
+bool verifySignment(char* ZA,char* xAn,char* yAn,unsigned char* message,int messagelen,char* rn,char* sn)
+{
     big r,s;
     big e;
     big t;
@@ -313,27 +462,30 @@ bool verifySignment(char* ZA,char* xAn,char* yAn,char* message,int messagelen,ch
     cinstr(s,sn);
     cinstr(xA,xAn);
     cinstr(yA,yAn);
-    char _message[65];
+    byte _message[65];
 
     //step1
-    if(notIn_1n(r)){
+    if(notIn_1n(r))
+    {
         return false;
     }
 
     //step2
-    if(notIn_1n(s)){
+    if(notIn_1n(s))
+    {
         return false;
     }
 
     //step3
-    gen_Message(ZA,message,_message);
+    gen_Message(ZA,message,messagelen,_message);
 
     //step4
-    calE(_message,e);
+    calE(_message,messagelen+32,e);
 
     //step5
     calrt(r,s,t);
-    if(is_zero(t)){
+    if(is_zero(t))
+    {
         return false;
     }
 
@@ -342,10 +494,12 @@ bool verifySignment(char* ZA,char* xAn,char* yAn,char* message,int messagelen,ch
 
     //step7
     calrt(e,x1,R);
-    if(is_equal(R,r)){
+    if(is_equal(R,r))
+    {
         return true;
     }
-    else{
+    else
+    {
         return false;
     }
 }
@@ -359,7 +513,7 @@ bool verifySignment(char* ZA,char* xAn,char* yAn,char* message,int messagelen,ch
 void SM2::printDebugResult(big tmp,char* shouldbe){
     char out[65];
     big_to_bytes(0,tmp,out,FALSE);
-    streamToString((byte*)out,32,(byte*)out);
+    streamToString((byte*)out,32,out);
     std::cout << "Your value:" << out << "\nShould be: " << shouldbe << endl;
 }
 int main(){
