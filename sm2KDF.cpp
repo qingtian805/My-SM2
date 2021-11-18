@@ -52,7 +52,8 @@ void SM2::KDF(char* Z,int Zlen,double klen,char* key)
         }
     }
 
-    for(int i = 0;i<cel-1;i++){//Ha1-Ha[klen/v]-1
+    for(int i = 0;i<cel-1;i++)//Ha1-Ha[klen/v]-1
+    {
         strcat(key,(char*)Ha[i]);
         memcpy(key + (i*32), Ha[i], 32);
     }
