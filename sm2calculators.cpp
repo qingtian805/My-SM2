@@ -12,6 +12,39 @@ extern "C"
 #include"sm3.c"
 
 using namespace SM2;
+using namespace std;
+
+void SM2::gen_Message(char* ZAn,byte* message,int mlen,byte* _message)
+{
+    byte ZA[32];
+    stringToStream(ZAn,64,ZA);
+    memcpy(_message,ZAn,32);//偏移0-31复制为ZA
+    memcpy(_message+32,message,mlen);//偏移32-++复制为message
+}
+
+void SM2::calE(byte* _message,int _mlen,big e)
+{
+    char en[65];
+    sm3(_message,_mlen,(byte*)en);
+    streamToString((byte*)en,32,en);
+    cinstr(e,en);
+}
+
+void SM2::genRandom(big k)
+{
+    big n;
+
+    n = mirvar(0);
+    cinstr(n,nn);
+
+    do
+    {
+    irand(time(NULL)+SEED);
+    bigrand(n,k);// 0 <= k < n
+    }while(is_zero(k));//是0则重新生成
+
+    mirkill(n);
+}
 
 void SM2::calrt(big er,big x1s,big rt)
 {
@@ -134,3 +167,133 @@ void SM2::cal_P1(big s,big t,big xA,big yA,big x1)
     epoint_free(pA);
     epoint_free(p1);
 }
+
+bool SM2::notIn_1n(big __x)
+{
+    big cmp0;//0
+    big cmpn;//n
+    bool res1,res2;
+    cmp0 = mirvar(0);
+    cmpn = mirvar(0);
+    cinstr(cmpn,nn);
+    res1 = (mr_compare(__x,cmp0) == 0);// == 0
+    res2 = (mr_compare(__x,cmpn) >= 0);// >= n
+    mirkill(cmp0);
+    mirkill(cmpn);
+    return res1||res2; // ==0 || >=n
+}
+
+bool SM2::is_n(big __x)
+{
+    big cmpn;
+    bool res;
+    cmpn = mirvar(0);
+    cinstr(cmpn,nn);
+    res = (mr_compare(__x,cmpn) == 0);// == n
+    mirkill(cmpn);
+    return res;// == n
+}
+
+bool SM2::is_zero(big __x)
+{
+    big cmp0;
+    bool res;
+    cmp0 = mirvar(0);
+    res = (mr_compare(__x,cmp0) == 0);// == 0
+    mirkill(cmp0);
+    return res;
+}
+
+bool SM2::is_equal(big __x,big __y)
+{
+    return (mr_compare(__x,__y) == 0);
+}
+
+//DEBUG 在sm2.hpp中启用
+#if DEBUG
+void SM2::printDebugResult(big tmp,char* shouldbe){
+    char out[65];
+    big_to_bytes(0,tmp,out,FALSE);
+    streamToString((byte*)out,32,out);
+    std::cout << "Your value:" << out << "\nShould be: " << shouldbe << endl;
+}
+int main(){
+    miracl *mip = mirsys(64,16);
+    if(mip == NULL){
+        cout << "MIRACL init Faltal" << endl;
+        exit(0);
+    }
+    mip -> IOBASE = 16;
+
+    big k,x1;
+    k = mirvar(0);
+    x1 = mirvar(0);
+    big e,r,rk;
+    e = mirvar(0);
+    r = mirvar(0);
+    rk = mirvar(0);
+    big dA,s;
+    dA = mirvar(0);
+    s = mirvar(0);
+
+    do{
+        do{
+            //step 4
+            cinstr(k,kn);
+            calP1(k,x1);
+            printDebugResult(x1,x1n);
+
+            //step 5
+            cinstr(e,en);
+            calrt(e,x1,r);
+
+            add(r,k,rk);//rk = r + k
+        }while( is_zero(r) || is_n(rk));
+        printDebugResult(r,rn);
+        //step 6
+        cinstr(dA,dAn);
+        cals(k,dA,r,s);
+    }while(is_zero(s));
+    printDebugResult(s,sn);
+
+    mirkill(rk);
+    mirkill(k);
+    mirkill(dA);
+
+    bool res;
+    if(notIn_1n(r)){
+        res = false;
+        cout << res << endl;
+    }
+    if(notIn_1n(s)){
+        res = false;
+        cout << res << endl;
+    }
+    big t;
+    t = mirvar(0);
+    calrt(r,s,t);
+    if(is_zero(t)){
+        res = false;
+        cout << res << endl;
+    }
+    big xA,yA;
+    xA = mirvar(0);
+    yA = mirvar(0);
+    cinstr(xA,xAn);
+    cinstr(yA,yAn);
+    cal_P1(s,t,xA,yA,x1);
+    big R;
+    R = mirvar(0);
+    calrt(e,x1,R);
+    if(is_equal(R,r)){
+        res = true;
+        cout << res << endl;
+    }
+    else{
+        return false;
+        cout << res << endl;
+    }
+
+    return 0;
+}
+#endif

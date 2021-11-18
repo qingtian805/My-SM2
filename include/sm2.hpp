@@ -80,19 +80,6 @@ namespace SM2{
     //计算椭圆曲线点P1`(x1`,y1`)=[s`]G+[t]PA
     void cal_P1(big s,big t,big xA,big yA,big x1);
 
-    //顶函数，由KDF调用
-    //输入：x 浮点数
-    //输出：top 顶函数值
-    //返回：bool型返回x是否为整数
-    //      整数型返回顶函数值
-    bool __top(double x,int* top);
-    int __top(double x);
-
-    //底函数，由KDF调用
-    //输入：x 浮点数
-    //返回：底函数值
-    int __floor(double x);
-
     //密钥派生函数
     //输入：Z 共享秘密
     //  Zlen 共享秘密长度
@@ -123,9 +110,9 @@ namespace SM2{
 //计算用户其他信息函数（ZA）
 //输入：ID 发送者ID
 //  IDlen 发送者ID长度(字节)
-//  xA yA 发送者公钥坐标
+//  xAn yAn 发送者公钥坐标
 //输出：ZA[65] 用户其他信息
-void genZA(char *ID,int IDlen,char *xA,char *yA,char* ZA);
+void genZA(char *ID,int IDlen,char *xAn,char *yAn,unsigned char* ZA);
 
 //SM2椭圆曲线算法签名生成函数
 //输入：ZA[65] 发送者其他信息
