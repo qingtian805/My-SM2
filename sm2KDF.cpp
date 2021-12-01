@@ -61,6 +61,7 @@ void SM2::KDF(char* Z,int Zlen,double klen,char* key)
 }
 
 #if DEBUG
+using namespace std;
 int main(void){
     char key[33]="";
     char Z[4] = "abc";

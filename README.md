@@ -9,10 +9,12 @@ This repo stores its code.
 
 **notes.md** A studing note of basic knowledge.  
 **README.md** Common ReadMe file.  
+**sm2init.cpp** Initalizing funcions.  
 **sm2culculators.cpp** All functions calculates number in sm2.  
 **sm2KDF.cpp** KDF assisting function.  
 **sm2old.c** The main file of my project, contines the final version of My-SM2 when the summer pratical training over.  
 **sm2signment.cpp** Main functions of SM2 signment.  
+**sm2encrypt.cpp** Main functions of SM2 encryption.  
 **sm2StreamString.cpp** Contains two functions converts stream and string.  
 **TOTP.cpp** C++ version of TOTP using SM3.  
 

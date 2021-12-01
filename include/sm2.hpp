@@ -31,6 +31,15 @@ namespace SM2{
     char sn[65] =  "B1B6AA29DF212FD8763182BC0D421CA1BB9038FD1F7F42D4840B69C485BBC1AA";
     #endif
 
+    //初始化miracl系统
+    //输入/输出：mip 指向miracl系统的指针
+    //    返回： 初始化结果，成功为true，失败为false
+    bool init_miracl(miracl *mip);
+    
+    //初始化椭圆曲线
+    //参数在此sm2.hpp中指定，无需输入输出返回
+    void init_ecruve(void);
+    
     //sm3补足函数，将比特流转换为字符串
     //输入：stream 比特流
     //  streamlen 比特流长度(字节)
@@ -75,7 +84,7 @@ namespace SM2{
 
     //计算签名公钥 P1(x1,y1) = [k]G
     //输出：x1 取出的坐标x值
-    void calP1(big k,big x1);
+    void calP1(big k,big x1,big y1);
 
     //计算椭圆曲线点P1`(x1`,y1`)=[s`]G+[t]PA
     void cal_P1(big s,big t,big xA,big yA,big x1);
@@ -98,6 +107,9 @@ namespace SM2{
 
     //返回：判断输入是否相等，相等返回真
     bool is_equal(big __x,big __y);
+
+    //返回：判断字节串是否为全0,是则返回真
+    bool is_allzero(byte* Bs,int lenB);
 
     #if DEBUG
     //用于打印测试结果
@@ -131,3 +143,19 @@ void genSignment(char* ZA,char* dAn,char* message,int messagelen,char* rn,char* 
 //  rn sn 签名密钥对
 //返回：签验证结果，true验证成功，false验证失败
 bool verifySignment(char* ZA,char* xAn,char* yAn,char* message,int messagelen,char* rn,char* sn);
+
+//SM2椭圆曲线算法信息加密函数
+//输入：message 被加密的信息
+//  messagelen 加密信息长度
+//  xBn,yBn 接收者公钥
+//输出：emessage 加密后信息，请准备比原信息长97长度的比特串。
+//返回：bool 如果加密失败，返回false，如果成功则返回true
+bool encryptMessage(char* messsage,int messagelen,char* xBn,char* yBn,char* emessage);
+
+//SM2椭圆曲线算法信息解密函数
+//输入：emessage 要解密的信息
+//  emessagelen 加密信息长度
+//  dBn 接收者的私钥
+//输出：message 解密后的信息，长度为解密信息-97
+//返回：bool 如果解密失败，返回false，如果成功返回true
+bool decryptMessage(char* emessage,int emessagelen,char* dBn,char* message);

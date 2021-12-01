@@ -76,6 +76,7 @@ void SM2::stringToStream(char* string,int stringlen,unsigned char* stream)
 }
 
 #if DEBUG
+using namespace std;
 int main(){
     unsigned char b[10] = "abcdefghi";
     unsigned char res[65] = "";

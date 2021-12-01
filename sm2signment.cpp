@@ -2,9 +2,7 @@ extern "C"
 {
 #include"miracl.h"
 }
-#include<time.h>
 #include<iostream>
-#include<stdlib.h>
 #include<memory.h>
 #include"sm3.c"
 #include"sm2.hpp"
@@ -35,12 +33,12 @@ void genSignment(char* ZAn,char* dAn,unsigned char* message,int messagelen,char*
 {
     //init MIRACL
     miracl *mip;
-    mip = mirsys(64,16);//16位
-    if(mip == NULL)
+    if(! init_miracl(mip))
     {
         cout << "MIRACL INIT FALTAL" << endl;
-        exit(0);
     }
+    init_ecruve();
+
     big rk;//r+k
     big e;
     big k;
@@ -72,7 +70,7 @@ void genSignment(char* ZAn,char* dAn,unsigned char* message,int messagelen,char*
             genRandom(k);
 
             //step 4
-            calP1(k,x1);
+            calP1(k,x1,NULL);
 
             //step 5
             calrt(e,x1,r);
@@ -100,6 +98,13 @@ void genSignment(char* ZAn,char* dAn,unsigned char* message,int messagelen,char*
 
 bool verifySignment(char* ZAn,char* xAn,char* yAn,unsigned char* message,int messagelen,char* rn,char* sn)
 {
+    miracl *mip;
+    if(! init_miracl(mip))
+    {
+        cout << "MIRACL INIT FALTAL" << endl;
+    }
+    init_ecruve();
+
     big r,s;
     big e;
     big t;

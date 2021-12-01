@@ -1,84 +1,112 @@
 #include<iostream>
 #include<time.h>
+#include<memory.h>
 #include<string.h>
 #include"sm3.c"
 
 using namespace std;
 
-#define DEBUG false
+#define DEBUG true
 
 //参数设置 
-#define __KLEN 64
-    //密钥长度
-#define __T0 0
+    //密钥长度(字节)
+#define TOTP_MAX_KLEN 64
     //初始时间
-#define __T1 30
+#define TOTP_T0 0
     //时间间隔
-#define DIGEST 6
+#define TOTP_T1 30
     //返回数字位数（DEC）
+#define TOTP_DIGEST 6
+    //信息摘要长度
+#define TOTP_HLEN 32
 
 namespace TOTPnp{
-    time_t T1 = __T1;//TOTP TC时间间隔设置
-    time_t T0 = __T0;//TOTP TC起始时间设置
-    time_t t;
-    bool __TC(char *ct);// void -> ct
-    bool __HMAC(char *K,char *TC,char *res);// K,TC -> res
-    bool __Truncate(char *HMAC,char *cotp);//HMAC -> cotp
+    void __TC(char *ct);// void -> ct
+    void __HMAC(char *K,int Klen,char *M,int Mlen,char *res);// K,TC -> res
+    void __Truncate(char *HMAC,char *cotp);//HMAC -> cotp
     int __pow();
 };
 
 int TOTPnp::__pow(void)
 {
     int res = 10;
-    for(int i=1;i<DIGEST;i++)
+    for(int i=1;i<TOTP_DIGEST;i++)
     {
         res = res * 10;
     }
     return res;
 }
 
-bool TOTPnp::__TC(char* ct)
+void TOTPnp::__TC(char *ct)
 {
+    time_t t;
     char *tp;
     t = time(NULL);//获得当前时间戳
-    t = (t-T0)/T1;
+    t = (t-TOTP_T0)/TOTP_T1;
     tp = (char*)&t;
     for(int i=0; i<8;i++)
     {
         ct[i] = *(tp+i);
     }
-    return true;
 }
 
-bool TOTPnp::__HMAC(char *K,char *TC,char *res)
+void TOTPnp::__HMAC(char *_K,int Klen,char *M,int Mlen,char *res)
 {
-    char message[__KLEN + 8];
-    strcpy(message,K);//构造连接K TC的字符串(字节串)
-    strcat(message,TC);
-    sm3((unsigned char*)message,__KLEN + 8,(unsigned char*)res);
-    return true;
+    unsigned char ipad = 0x5C;//内部填充
+    unsigned char opad = 0x36;//外部填充
+    unsigned char Hk[TOTP_HLEN];//摘要存储区
+
+    int KLEN;//信息增加长度
+    if(Mlen > TOTP_HLEN) KLEN = Mlen;
+    else                 KLEN = TOTP_HLEN;
+    unsigned char K[TOTP_MAX_KLEN+KLEN];//信息
+
+    //初始化K，补长0
+    memset(K,0,TOTP_MAX_KLEN+Mlen);//第一次计算使用前TOTP_MAX_KLEN+Mlen字节
+    memcpy(K,_K,Klen);
+
+    for(int i = 0;i<TOTP_MAX_KLEN;i++)//K ^ ipad
+    {
+        K[i] = K[i] ^ ipad;
+    }
+
+    memcpy(K+TOTP_MAX_KLEN,M,Mlen);
+
+    sm3(K,TOTP_MAX_KLEN+Mlen,Hk);//H(K^ipad)= hash sum 1
+
+    //第二次初始化K，补长0
+    memset(K,0,TOTP_MAX_KLEN+TOTP_HLEN);//第二次使用全部TOTP_MAX_KLEN+摘要长度 字节
+    memcpy(K,_K,Klen);
+
+    for(int i = 0;i<TOTP_MAX_KLEN;i++)//K ^ opad
+    {
+        K[i] = K[i] ^ opad;
+    }
+
+    memcpy(K+TOTP_MAX_KLEN,Hk,TOTP_HLEN);//o key pad || hash sum 1
+
+    sm3(K,TOTP_MAX_KLEN+TOTP_HLEN,(unsigned char*)res);
 }
 
-bool TOTPnp::__Truncate(char *HMAC,char *cotp)
+void TOTPnp::__Truncate(char *HMAC,char *cotp)
 {
     short offset;
     unsigned int otp;
     unsigned int binary = 0;
     unsigned int otpp;
-    offset = *(HMAC + 31) & 0xf;//offset 取最后一个字节的低4位
+    offset = *(HMAC + TOTP_HLEN - 1) & 0xf;//offset 取最后一个字节的低4位
     binary = (HMAC[offset] & 0x7f) << 24;
-    binary = binary | (HMAC[offset + 1]  << 16);
-    binary = binary | (HMAC[offset + 2]  << 8);
-    binary = binary | (HMAC[offset + 3] );
+    binary = binary | ((HMAC[offset + 1] & 0xFF)  << 16);
+    binary = binary | ((HMAC[offset + 2] & 0xFF)  << 8);
+    binary = binary | ((HMAC[offset + 3] & 0xFF) );
     otp = binary % (TOTPnp::__pow());
     otpp = otp;
-    for(int i=1;i<=DIGEST;i++)
+    for(int i=1;i<=TOTP_DIGEST;i++)
     {
-        cotp[DIGEST - i] = otpp % 10 + 48;
+        cotp[TOTP_DIGEST - i] = otpp % 10 + 48;
         otpp = otpp / 10;
     }
-    cotp[DIGEST]='\0';
-    return true;
+    cotp[TOTP_DIGEST]='\0';
 }
 
 bool TOTP(char *K,char * cotp)//K -> cotp
@@ -86,17 +114,22 @@ bool TOTP(char *K,char * cotp)//K -> cotp
     /*
     TOTP总调用函数，如果需要修改返回位数，请修改源码最上方设置。另外，请注意字符串结尾\0问题
     */
+    int klen = strlen(K);
+    if(klen > TOTP_MAX_KLEN){
+        cout << "KEY TOO LONG!" << endl;
+        return false;
+    }
     char ct[8];
-    char res[33];
+    char res[TOTP_HLEN];
     TOTPnp::__TC(ct);
-    TOTPnp::__HMAC(K,ct,res);
+    TOTPnp::__HMAC(K,klen,ct,8,res);
     TOTPnp::__Truncate(res,cotp);
     return true;
 }
 
 #if DEBUG
 int main(void){
-    char key[] = "32C4AE2C1F1981195F9904466A39C9948FE30BBFF2660BE1715A4589334C74C7";
+    char key[] = "SVUKRBXFLEOFZGQMC";
     char cotp[7];
     TOTP(key,cotp);
     cout << cotp << endl;

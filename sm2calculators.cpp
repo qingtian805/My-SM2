@@ -4,11 +4,8 @@ extern "C"
 }
 #include"sm2.hpp"
 #include<time.h>
-#include<math.h>
 #include<iostream>
-#include<stdlib.h>
 #include<memory.h>
-#include<string.h>
 #include"sm3.c"
 
 using namespace SM2;
@@ -91,26 +88,21 @@ void SM2::cals(big k,big dA,big r,big s)
     mirkill(n);
 }
 
-void SM2::calP1(big k,big x1)
+void SM2::calP1(big k,big x1,big y1)
 {
     big xG,yG;//椭圆曲线基点
-    big a,b,p;//椭圆曲线参数
-    big y1;//无用的y1
     epoint *g,*p1;
+    bool yisnull = false;
 
+    if(y1 == NULL){
+        y1 = mirvar(0);
+        yisnull = true;
+    }
     xG = mirvar(0);//初始化参数
     yG = mirvar(0);
-    a = mirvar(0);
-    b = mirvar(0);
-    p = mirvar(0);
-    y1 = mirvar(0);
     cinstr(xG,xGn);
     cinstr(yG,yGn);
-    cinstr(a,an);
-    cinstr(b,bn);
-    cinstr(p,pn);
 
-    ecurve_init(a,b,p,MR_PROJECTIVE);//初始化椭圆曲线
     g = epoint_init();
     p1 = epoint_init();
     epoint_set(xG,yG,0,g);
@@ -118,12 +110,12 @@ void SM2::calP1(big k,big x1)
     ecurve_mult(k,g,p1);//p=[k]g
     epoint_get(p1,x1,y1);//取出参数
 
+    if(yisnull){
+        mirkill(y1);
+    }
     mirkill(xG);//函数清理
     mirkill(yG);
-    mirkill(a);
-    mirkill(b);
-    mirkill(p);
-    mirkill(y1);
+
     epoint_free(g);
     epoint_free(p1);
 }
@@ -131,23 +123,15 @@ void SM2::calP1(big k,big x1)
 void SM2::cal_P1(big s,big t,big xA,big yA,big x1)
 {
     big xG,yG;//椭圆曲线基点
-    big a,b,p;//椭圆曲线参数
     big y1;//无用的_y1
     epoint *g,*pA,*p1;
 
     xG = mirvar(0);//初始化参数
     yG = mirvar(0);
-    a = mirvar(0);
-    b = mirvar(0);
-    p = mirvar(0);
     y1 = mirvar(0);
     cinstr(xG,xGn);
     cinstr(yG,yGn);
-    cinstr(a,an);
-    cinstr(b,bn);
-    cinstr(p,pn);
 
-    ecurve_init(a,b,p,MR_PROJECTIVE);//初始化椭圆曲线
     g = epoint_init();
     pA = epoint_init();
     p1 = epoint_init();
@@ -159,9 +143,6 @@ void SM2::cal_P1(big s,big t,big xA,big yA,big x1)
 
     mirkill(xG);//函数清理
     mirkill(yG);
-    mirkill(a);
-    mirkill(b);
-    mirkill(p);
     mirkill(y1);
     epoint_free(g);
     epoint_free(pA);
@@ -209,6 +190,23 @@ bool SM2::is_equal(big __x,big __y)
     return (mr_compare(__x,__y) == 0);
 }
 
+bool SM2::is_allzero(byte* Bs,int lenB)
+{
+    for(int i = 0;i<lenB;i++)
+    {
+        if(*(Bs+i) == 0){//如果当前为0,则检查下一位
+            continue;
+        }
+        else//如果当前位不是0,则返回false并退出函数
+        {
+            return false;
+        }
+    }
+    return true;//如果检查结束，则全部为0
+}
+
+
+
 //DEBUG 在sm2.hpp中启用
 #if DEBUG
 void SM2::printDebugResult(big tmp,char* shouldbe){
@@ -240,7 +238,7 @@ int main(){
         do{
             //step 4
             cinstr(k,kn);
-            calP1(k,x1);
+            calP1(k,x1,NULL);
             printDebugResult(x1,x1n);
 
             //step 5
