@@ -94,7 +94,7 @@ namespace SM2{
     //  Zlen 共享秘密长度
     //  klen 要求密钥长度(比特)
     //输出：key 求出的密钥
-    void KDF(char* Z,int Zlen,double klen,char* key);
+    void KDF(char* Z,int Zlen,int klen,char* key);
 
     //返回：判断输入给出数值是否处于[1,n-1]，如果不在则返回真
     bool notIn_1n(big __x);

@@ -9,11 +9,11 @@ using namespace SM2;
 //顶函数使用math.h double cile()
 //底函数使用math.h double floor()
 
-void SM2::KDF(char* Z,int Zlen,double klen,char* key)
+void SM2::KDF(char* Z,int Zlen,int klen,char* key)
 {
     unsigned int ct = 1;
-    int cel = (int)ceil(klen/256.0);//顶函数 klen/v
-    int flr = (int)floor(klen/256.0);//底函数 klen/v
+    int cel = (int)ceil((double)klen/256.0);//顶函数 klen/v
+    int flr = (int)floor((double)klen/256.0);//底函数 klen/v
     int _Halen;
     byte Ha[cel][32];//Hai
     byte Htmp[Zlen + sizeof(int)];
@@ -35,10 +35,9 @@ void SM2::KDF(char* Z,int Zlen,double klen,char* key)
     }
     else
     {
-        int l = klen-(256.0*flr);//超出长度(比特数)
-        int bl = l/8;//有多少字节
-        l = l % 8;//余多少位
-        if(l == 0)//?????是否可以使用ceil函数代替?
+        int bl = (klen%256)/8;//超出多少字节
+        int l = klen%8;//超出长度(比特数)
+        if(l == 0)//若整除，则复制bl字节防止溢出
         {
             _Halen = bl;//_Ha长度为bl
             memcpy(_Ha,Ha[cel-1],bl);//若整除，则复制bl字节防止溢出
@@ -54,7 +53,6 @@ void SM2::KDF(char* Z,int Zlen,double klen,char* key)
 
     for(int i = 0;i<cel-1;i++)//Ha1-Ha[klen/v]-1
     {
-        strcat(key,(char*)Ha[i]);
         memcpy(key + (i*32), Ha[i], 32);
     }
     memcpy(key+((cel-1)*32),_Ha,_Halen);//Ha![klen/v]
@@ -62,10 +60,11 @@ void SM2::KDF(char* Z,int Zlen,double klen,char* key)
 
 #if DEBUG
 using namespace std;
-int main(void){
-    char key[33]="";
+int main(void)
+{
+    char key[34]="";
     char Z[4] = "abc";
-    KDF(Z,3,264,key);
+    KDF(Z,3,272,key);
     return 0;
 }
 #endif
