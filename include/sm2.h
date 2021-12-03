@@ -1,11 +1,17 @@
 extern "C"{
 #include"miracl.h"
 }
+
 //debug开关
-#define DEBUG true
+#define DEBUG_ENCRYPTION true
+//calculators debug开关
+#define DEBUG_SIGMENT true
 
 //随机数生成器赋值
 #define SEED 0x1BD8C95A
+
+//点模式，PC赋值，1为压缩模式，2为非压缩模式，4为混合模式
+//#define POINT_MODE 2
 
 namespace SM2{ 
     typedef unsigned char byte;  
@@ -18,17 +24,25 @@ namespace SM2{
     char xGn[65] = "32C4AE2C1F1981195F9904466A39C9948FE30BBFF2660BE1715A4589334C74C7";
     char yGn[65] = "BC3736A2F4F6779C59BDCEE36B692153D0A9877CC62A474002DF32E52139F0A0";
 
-    #if DEBUG
+    #if DEBUG_SIGMENT
     //标准第五章中的一些测试用参数
-    char xAn[65] = "09F9DF311E5421A150DD7D161E4BC5C672179FAD1833FC076BB08FF356F35020";
-    char yAn[65] = "CCEA490CE26775A52DC6EA718CC1AA600AED05FBF35E084A6632F6072DA9AD13";
-    char dAn[65] = "3945208F7B2144B13F36E38AC6D39F95889393692860B51A42FB81EF4DF7C5B8";
-    char en[65] =  "F0B43E94BA45ACCAACE692ED534382EB17E6AB5A19CE7B31F4486FDFC0D28640";
-    char kn[65] =  "59276E27D506861A16680F3AD9C02DCCEF3CC1FA3CDBE4CE6D54B80DEAC1BC21";
-    char x1n[65] = "04EBFC718E8D1798620432268E77FEB6415E2EDE0E073C0F4F640ECD2E149A73";
-    char y1n[65] = "E858F9D81E5430A57B36DAAB8F950A3C64E6EE6A63094D99283AFF767E124DF0";
-    char rn[65] =  "F5A03B0648D2C4630EEAC513E1BB81A15944DA3827D5B74143AC7EACEEE720B3";
-    char sn[65] =  "B1B6AA29DF212FD8763182BC0D421CA1BB9038FD1F7F42D4840B69C485BBC1AA";
+    #define XA "09F9DF311E5421A150DD7D161E4BC5C672179FAD1833FC076BB08FF356F35020"
+    #define yA "CCEA490CE26775A52DC6EA718CC1AA600AED05FBF35E084A6632F6072DA9AD13";
+    #define DA "3945208F7B2144B13F36E38AC6D39F95889393692860B51A42FB81EF4DF7C5B8";
+    #define E  "F0B43E94BA45ACCAACE692ED534382EB17E6AB5A19CE7B31F4486FDFC0D28640";
+    #define K  "59276E27D506861A16680F3AD9C02DCCEF3CC1FA3CDBE4CE6D54B80DEAC1BC21";
+    #define X1 "04EBFC718E8D1798620432268E77FEB6415E2EDE0E073C0F4F640ECD2E149A73";
+    #define Y1 "E858F9D81E5430A57B36DAAB8F950A3C64E6EE6A63094D99283AFF767E124DF0";
+    #define R  "F5A03B0648D2C4630EEAC513E1BB81A15944DA3827D5B74143AC7EACEEE720B3";
+    #define S  "B1B6AA29DF212FD8763182BC0D421CA1BB9038FD1F7F42D4840B69C485BBC1AA";
+    #endif
+
+    #if DEBUG_ENCRYPTION
+    //标准第五章测试参数
+    char message[] = "encryption standard";
+    char xBn[] = "09F9DF311E5421A150DD7D161E4BC5C672179FAD1833FC076BB08FF356F35020";
+    char yBn[] = "CCEA490CE26775A52DC6EA718CC1AA600AED05FBF35E084A6632F6072DA9AD13";
+    char dBn[] = "3945208F7B2144B13F36E38AC6D39F95889393692860B51A42FB81EF4DF7C5B8";
     #endif
 
     //初始化miracl系统
@@ -87,7 +101,10 @@ namespace SM2{
     void calP1(big k,big x1,big y1);
 
     //计算椭圆曲线点P1`(x1`,y1`)=[s`]G+[t]PA
-    void cal_P1(big s,big t,big xA,big yA,big x1);
+    void cal_P1(big s,big t,big xA,big yA,big x1,big y1);
+
+    //计算椭圆曲线点P2(x2,y2) = [k]PB(xB,yB)
+    void calP2(big k,big xB,big yB,big x2,big y2);
 
     //密钥派生函数
     //输入：Z 共享秘密
@@ -110,13 +127,6 @@ namespace SM2{
 
     //返回：判断字节串是否为全0,是则返回真
     bool is_allzero(byte* Bs,int lenB);
-
-    #if DEBUG
-    //用于打印测试结果
-    //输入：tmp 输出整数
-    //  shouldbe 整数应该是多少
-    void printDebugResult(big tmp,char* shouldbe);
-    #endif
 }
     
 //计算用户其他信息函数（ZA）
@@ -133,7 +143,7 @@ void genZA(char *ID,int IDlen,char *xAn,char *yAn,unsigned char* ZA);
 //  message 签名信息
 //  messagelen 信息长度(字节)，如果是字符串请考虑末尾\0的增加与否，增加则+1
 //输出：rn[65] sn[65] 签名密钥对
-void genSignment(char* ZA,char* dAn,char* message,int messagelen,char* rn,char* sn);
+bool genSignment(char* ZA,char* dAn,char* message,int messagelen,char* rn,char* sn);
 
 //SM2椭圆曲线算法签名验证函数
 //输入：ZA 发送者其他信息
