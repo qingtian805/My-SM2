@@ -9,6 +9,9 @@ This repo stores its code.
 
 **notes.md** A studing note of basic knowledge.  
 **README.md** Common ReadMe file.  
+
+### Source ./src
+
 **sm2culculators.cpp** All functions calculates number in sm2.  
 **sm2encrypt.cpp** Main functions of SM2 encryption.  
 **sm2init.cpp** Initalizing funcions.  
@@ -18,7 +21,7 @@ This repo stores its code.
 **sm2StreamString.cpp** Contains two functions converts stream and string.  
 **TOTP.cpp** C++ version of TOTP using SM3.  
 
-### ./include/
+### Include file ./include/
 
 **mir\*.\*** [MIRACL](https://github.com/miracl/MIRACL) lib files. Using for educational propose. In replace of [uint256_t](https://github.com/calccrypto/uint256_t) which was used to deal with bignum calculations.  
 **sm2.h** The master include file. Includes all main functions.  
@@ -32,7 +35,7 @@ This repo stores its code.
 **sm2type.h** Header contains self defined types of my SM2 system.  
 **sm3.c sm3.h** SM3 project by another coder and you can find them on [here](https://blog.csdn.net/qq_36298219/article/details/85926747).  
 
-### ./lib/
+### Libraries ./lib/
 
 **libmiracl.a** Complied MIRACL lib file.
 
