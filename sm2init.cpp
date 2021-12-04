@@ -2,7 +2,8 @@ extern "C"
 {
 #include"miracl.h"
 }
-#include"sm2.hpp"
+#include "sm2init.h"
+#include "sm2parameter.h"
 
 using namespace SM2;
 

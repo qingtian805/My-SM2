@@ -1,11 +1,16 @@
 extern "C"
 {
-#include"miracl.h"
+#include "miracl.h"
 }
-#include<iostream>
-#include<memory.h>
-#include"sm3.c"
-#include"sm2.hpp"
+#include <iostream>
+#include <memory.h>
+#include "sm3.h"
+#include "sm2sigment.h"
+#include "sm2type.h"
+#include "sm2init.h"
+#include "sm2calculators.h"
+#include "sm2parameter.h"
+#include "sm2StreamString.h"
 
 using namespace std;
 using namespace SM2;
@@ -29,13 +34,14 @@ void genZA(char *ID,int IDlen,char *xAn,char *yAn,char* ZA)
     streamToString((byte*)ZA,32,ZA);
 }
 
-void genSignment(char* ZAn,char* dAn,unsigned char* message,int messagelen,char* rn,char* sn)
+bool genSignment(char* ZAn,char* dAn,unsigned char* message,int messagelen,char* rn,char* sn)
 {
     //init MIRACL
     miracl *mip;
     if(! init_miracl(mip))
     {
         cout << "MIRACL INIT FALTAL" << endl;
+        return false;
     }
     init_ecruve();
 
@@ -57,7 +63,7 @@ void genSignment(char* ZAn,char* dAn,unsigned char* message,int messagelen,char*
     byte _message[messagelen + 32];
 
     //step 1
-    SM2::gen_Message(ZAn,message,messagelen,_message);
+    gen_Message(ZAn,message,messagelen,_message);
 
     //step 2
     calE(_message,messagelen+32,e);
@@ -82,10 +88,11 @@ void genSignment(char* ZAn,char* dAn,unsigned char* message,int messagelen,char*
     }while(is_zero(s));
 
     big_to_bytes(0,r,rn,FALSE);
-    streamToString((byte*)rn,32,rn);
     big_to_bytes(0,s,sn,FALSE);
+    streamToString((byte*)rn,32,rn);
     streamToString((byte*)sn,32,sn);
 
+EXIT_FS:
     mirkill(rk);
     mirkill(e);
     mirkill(k);
@@ -94,6 +101,7 @@ void genSignment(char* ZAn,char* dAn,unsigned char* message,int messagelen,char*
     mirkill(s);
     mirkill(dA);
     mirexit();
+    return true;
 }
 
 bool verifySignment(char* ZAn,char* xAn,char* yAn,unsigned char* message,int messagelen,char* rn,char* sn)
@@ -102,9 +110,11 @@ bool verifySignment(char* ZAn,char* xAn,char* yAn,unsigned char* message,int mes
     if(! init_miracl(mip))
     {
         cout << "MIRACL INIT FALTAL" << endl;
+        return 0;
     }
     init_ecruve();
 
+    bool ret;
     big r,s;
     big e;
     big t;
@@ -127,13 +137,15 @@ bool verifySignment(char* ZAn,char* xAn,char* yAn,unsigned char* message,int mes
     //step1
     if(notIn_1n(r))
     {
-        return false;
+        ret = false;
+        goto EXIT_FV;
     }
 
     //step2
     if(notIn_1n(s))
     {
-        return false;
+        ret = false;
+        goto EXIT_FV;
     }
 
     //step3
@@ -146,22 +158,37 @@ bool verifySignment(char* ZAn,char* xAn,char* yAn,unsigned char* message,int mes
     calrt(r,s,t);
     if(is_zero(t))
     {
-        return false;
+        ret = false;
+        goto EXIT_FV;
     }
 
     //step6
-    cal_P1(s,t,xA,yA,x1);
+    cal_P1(s,t,xA,yA,x1,NULL);
 
     //step7
     calrt(e,x1,R);
     if(is_equal(R,r))
     {
-        return true;
+        ret = true;
+        goto EXIT_FV;
     }
     else
     {
-        return false;
+        ret = false;
+        goto EXIT_FV;
     }
+
+EXIT_FV:
+    mirkill(r);
+    mirkill(s);
+    mirkill(e);
+    mirkill(t);
+    mirkill(xA);
+    mirkill(yA);
+    mirkill(x1);
+    mirkill(R);
+    mirexit();
+    return ret;
 }
 
 

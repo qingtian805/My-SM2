@@ -9,19 +9,27 @@ This repo stores its code.
 
 **notes.md** A studing note of basic knowledge.  
 **README.md** Common ReadMe file.  
-**sm2init.cpp** Initalizing funcions.  
 **sm2culculators.cpp** All functions calculates number in sm2.  
-**sm2KDF.cpp** KDF assisting function.  
-**sm2old.c** The main file of my project, contines the final version of My-SM2 when the summer pratical training over.  
-**sm2signment.cpp** Main functions of SM2 signment.  
 **sm2encrypt.cpp** Main functions of SM2 encryption.  
+**sm2init.cpp** Initalizing funcions.  
+**sm2KDF.cpp** KDF assisting function.  
+**sm2old.cpp** The main file of my project, contines the final version of My-SM2 when the summer pratical training over.  
+**sm2signment.cpp** Main functions of SM2 signment.  
 **sm2StreamString.cpp** Contains two functions converts stream and string.  
 **TOTP.cpp** C++ version of TOTP using SM3.  
 
 ### ./include/
 
 **mir\*.\*** [MIRACL](https://github.com/miracl/MIRACL) lib files. Using for educational propose. In replace of [uint256_t](https://github.com/calccrypto/uint256_t) which was used to deal with bignum calculations.  
-**sm2.hpp** In assist of sm2.cpp, making My-SM2 an more advanced version.  
+**sm2.h** The master include file. Includes all main functions.  
+**sm2calculators.h** Header of sm2calculators.cpp.  
+**sm2encrypt.h** Header of sm2encrypt.cpp.  
+**sm2init.h** Header of  
+**sm2KDF.h** Header of sm2KDF.cpp.  
+**sm2parameter.h** Header contains parameters used in SM2 system.  
+**sm2sigment.h** Header of sm2sigment.cpp.  
+**sm2StreamString.h** Header of sm2StreamString.cpp.  
+**sm2type.h** Header contains self defined types of my SM2 system.  
 **sm3.c sm3.h** SM3 project by another coder and you can find them on [here](https://blog.csdn.net/qq_36298219/article/details/85926747).  
 
 ### ./lib/
@@ -44,3 +52,5 @@ Some new features may be added.
    2. Divide SM2 into several files. FINISHED
    3. Develop SM2 into a lib like format. FINISHED
    4. Finish encrypt function.  
+   5. Point compression function.  
+   6. Develop key exchange function.  

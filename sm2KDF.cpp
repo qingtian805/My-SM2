@@ -1,8 +1,12 @@
-#include<miracl.h>
-#include<math.h>
-#include<memory.h>
-#include"sm3.c"
-#include"sm2.hpp"
+extern "C"
+{
+#include "miracl.h"
+}
+#include <math.h>
+#include <memory.h>
+#include "sm3.c"
+#include "sm2KDF.h"
+#include "sm2type.h"
 
 using namespace SM2;
 

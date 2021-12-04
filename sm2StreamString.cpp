@@ -1,6 +1,6 @@
-#include"sm2.hpp"
+#include "sm2StreamString.h"
 
-#if DEBUG
+#ifdef __SM2_DEBUG_SS__
 #include<iostream>
 #include"sm3.c"
 using namespace std;

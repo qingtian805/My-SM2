@@ -1,12 +1,14 @@
 extern "C"
 {
-#include"miracl.h"
+#include "miracl.h"
 }
-#include"sm2.hpp"
-#include<time.h>
-#include<iostream>
-#include<memory.h>
-#include"sm3.c"
+#include "sm2calculators.h"
+#include "sm2parameter.h"
+#include "sm2StreamString.h"
+#include <time.h>
+#include <iostream>
+#include <memory.h>
+#include "sm3.c"
 
 using namespace SM2;
 using namespace std;
@@ -94,10 +96,12 @@ void SM2::calP1(big k,big x1,big y1)
     epoint *g,*p1;
     bool yisnull = false;
 
-    if(y1 == NULL){
+    if(y1 == NULL)
+    {
         y1 = mirvar(0);
         yisnull = true;
     }
+
     xG = mirvar(0);//初始化参数
     yG = mirvar(0);
     cinstr(xG,xGn);
@@ -120,15 +124,20 @@ void SM2::calP1(big k,big x1,big y1)
     epoint_free(p1);
 }
 
-void SM2::cal_P1(big s,big t,big xA,big yA,big x1)
+void SM2::cal_P1(big s,big t,big xA,big yA,big x1,big y1)
 {
     big xG,yG;//椭圆曲线基点
-    big y1;//无用的_y1
     epoint *g,*pA,*p1;
+    bool yisnull = false;
+
+    if(y1 == NULL)
+    {
+        yisnull = true;
+        y1 = mirvar(0);
+    }
 
     xG = mirvar(0);//初始化参数
     yG = mirvar(0);
-    y1 = mirvar(0);
     cinstr(xG,xGn);
     cinstr(yG,yGn);
 
@@ -141,12 +150,32 @@ void SM2::cal_P1(big s,big t,big xA,big yA,big x1)
     ecurve_mult2(s,g,t,pA,p1);//p1 = [s]g + [t]pA
     epoint_get(p1,x1,y1);
 
+    if(yisnull)
+    {
+        mirkill(y1);
+    }
     mirkill(xG);//函数清理
     mirkill(yG);
-    mirkill(y1);
+
     epoint_free(g);
     epoint_free(pA);
     epoint_free(p1);
+}
+
+void SM2::calP2(big k,big xB,big yB,big x2,big y2)
+{
+    epoint *pB,*p2;
+
+    pB = epoint_init();
+    p2 = epoint_init();
+
+    epoint_set(xB,yB,0,pB);
+    ecurve_mult(k,pB,p2);
+
+    epoint_get(p2,x2,y2);
+
+    epoint_free(pB);
+    epoint_free(p2);
 }
 
 bool SM2::notIn_1n(big __x)
@@ -204,94 +233,3 @@ bool SM2::is_allzero(byte* Bs,int lenB)
     }
     return true;//如果检查结束，则全部为0
 }
-
-
-
-//DEBUG 在sm2.hpp中启用
-#if DEBUG
-void SM2::printDebugResult(big tmp,char* shouldbe){
-    char out[65];
-    big_to_bytes(0,tmp,out,FALSE);
-    streamToString((byte*)out,32,out);
-    std::cout << "Your value:" << out << "\nShould be: " << shouldbe << endl;
-}
-int main(){
-    miracl *mip = mirsys(64,16);
-    if(mip == NULL){
-        cout << "MIRACL init Faltal" << endl;
-        exit(0);
-    }
-    mip -> IOBASE = 16;
-
-    big k,x1;
-    k = mirvar(0);
-    x1 = mirvar(0);
-    big e,r,rk;
-    e = mirvar(0);
-    r = mirvar(0);
-    rk = mirvar(0);
-    big dA,s;
-    dA = mirvar(0);
-    s = mirvar(0);
-
-    do{
-        do{
-            //step 4
-            cinstr(k,kn);
-            calP1(k,x1,NULL);
-            printDebugResult(x1,x1n);
-
-            //step 5
-            cinstr(e,en);
-            calrt(e,x1,r);
-
-            add(r,k,rk);//rk = r + k
-        }while( is_zero(r) || is_n(rk));
-        printDebugResult(r,rn);
-        //step 6
-        cinstr(dA,dAn);
-        cals(k,dA,r,s);
-    }while(is_zero(s));
-    printDebugResult(s,sn);
-
-    mirkill(rk);
-    mirkill(k);
-    mirkill(dA);
-
-    bool res;
-    if(notIn_1n(r)){
-        res = false;
-        cout << res << endl;
-    }
-    if(notIn_1n(s)){
-        res = false;
-        cout << res << endl;
-    }
-    big t;
-    t = mirvar(0);
-    calrt(r,s,t);
-    if(is_zero(t)){
-        res = false;
-        cout << res << endl;
-    }
-    big xA,yA;
-    xA = mirvar(0);
-    yA = mirvar(0);
-    cinstr(xA,xAn);
-    cinstr(yA,yAn);
-    cal_P1(s,t,xA,yA,x1);
-    big R;
-    R = mirvar(0);
-    calrt(e,x1,R);
-    if(is_equal(R,r)){
-        res = true;
-        cout << res << endl;
-    }
-    else{
-        return false;
-        cout << res << endl;
-    }
-
-    return 0;
-}
-#endif
