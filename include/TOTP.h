@@ -15,10 +15,19 @@
 #define TOTP_HLEN 32
 
 namespace TOTP{
-    void __TC(char *ct);// void -> ct
-    void __HMAC(char *K,int Klen,char *M,int Mlen,char *res);// K,TC -> res
-    void __Truncate(char *HMAC,char *cotp);//HMAC -> cotp
+    // void -> ct
+    void __TC(char *ct);
+
+    // K,TC -> res
+    void __HMAC(char *K,int Klen,char *M,int Mlen,char *res);
+
+    //HMAC -> cotp
+    void __Truncate(char *HMAC,char *cotp);
+
+    //10^TOTP_DIGEST
     int __pow();
+
+    //TOTP主函数，输入K返回cotp
     bool TOTP(char *K,char * cotp);
 };
 #endif
