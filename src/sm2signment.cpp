@@ -17,20 +17,34 @@ using namespace SM2;
 
 void genZA(char *ID,int IDlen,char *xAn,char *yAn,char* ZA)
 {
-    char ENTLA[2];
-    char info[IDlen + 387] = "";//64 * 6 + 2 + 1 = 387
+    //椭圆曲线算法参数赋值
+    char an[65] = __an__;
+    char bn[65] = __bn__;
+    char xGn[65] = __xGn__;
+    char yGn[65] = __yGn__;
+    //函数内部数值
+    char ENTLA[2];//可否使用union替代？
+    char info[IDlen + 194] = "";//32 * 6 + 2 = 194
     int entlena = IDlen * 8;
+    //将数据转换为字节串
+    stringToStream(an,64,(byte*)an);
+    stringToStream(bn,64,(byte*)bn);
+    stringToStream(xGn,64,(byte*)xGn);
+    stringToStream(yGn,64,(byte*)yGn);
+    stringToStream(xAn,64,(byte*)xAn);
+    stringToStream(yAn,64,(byte*)yAn);
+    //计算ZA
     ENTLA[0] = entlena & 0xFF;
     ENTLA[1] = (entlena & 0xFF00) >> 8;
     memcpy(info,ENTLA,2);
     memcpy(info+2,ID,IDlen);
-    memcpy(info+IDlen+2,an,64);
-    memcpy(info+IDlen+66,bn,64);
-    memcpy(info+IDlen+130,xGn,64);
-    memcpy(info+IDlen+194,yGn,64);
-    memcpy(info+IDlen+258,xAn,64);
-    memcpy(info+IDlen+322,yAn,64);
-    sm3((byte*)info,IDlen+386,(byte*)ZA);
+    memcpy(info+IDlen+2,an,32);
+    memcpy(info+IDlen+34,bn,32);
+    memcpy(info+IDlen+66,xGn,32);
+    memcpy(info+IDlen+98,yGn,32);
+    memcpy(info+IDlen+130,xAn,32);
+    memcpy(info+IDlen+162,yAn,32);
+    sm3((byte*)info,IDlen+194,(byte*)ZA);
     streamToString((byte*)ZA,32,ZA);
 }
 
