@@ -14,7 +14,7 @@ add_executable(my-sm2-sigtest testsig ${SRC_FILES}) #签名测试
 
 add_executable(my-sm2-test testsm2.cpp ${SRC_FILES}) #所有测试
 
-add_executable(my-sm2-TOTPclient OTPclient.cpp src/TOTP.cpp src/sm3.c)
+add_executable(my-sm2-TOTPclient OTPclient.cpp src/TOTP.cpp src/sm3.c)#totp客户端成品
 
 target_link_libraries(my-sm2-enctest miracl)
 target_link_libraries(my-sm2-sigtest miracl)

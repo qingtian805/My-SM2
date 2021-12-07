@@ -6,12 +6,10 @@ extern "C"
 #include "sm2parameter.h"
 #include "sm2StreamString.h"
 #include <time.h>
-#include <iostream>
 #include <memory.h>
-#include "sm3.c"
+#include "sm3.h"
 
 using namespace SM2;
-using namespace std;
 
 void SM2::gen_Message(char* ZAn,byte* message,int mlen,byte* _message)
 {
@@ -31,6 +29,7 @@ void SM2::calE(byte* _message,int _mlen,big e)
 
 void SM2::genRandom(big k)
 {
+    char nn[65] = __nn__; 
     big n;
 
     n = mirvar(0);
@@ -47,6 +46,7 @@ void SM2::genRandom(big k)
 
 void SM2::calrt(big er,big x1s,big rt)
 {
+    char nn[65] = __nn__;
     big n,tmp;
 
     n = mirvar(0);
@@ -63,6 +63,7 @@ void SM2::calrt(big er,big x1s,big rt)
 
 void SM2::cals(big k,big dA,big r,big s)
 {
+    char nn[65] = __nn__;
     big tmp,und;
     big n;
 
@@ -92,9 +93,12 @@ void SM2::cals(big k,big dA,big r,big s)
 
 void SM2::calP1(big k,big x1,big y1)
 {
+    char xGn[65] = __xGn__;
+    char yGn[65] = __yGn__;
     big xG,yG;//椭圆曲线基点
     epoint *g,*p1;
     bool yisnull = false;
+    
 
     if(y1 == NULL)
     {
@@ -126,6 +130,8 @@ void SM2::calP1(big k,big x1,big y1)
 
 void SM2::cal_P1(big s,big t,big xA,big yA,big x1,big y1)
 {
+    char xGn[65] = __xGn__;
+    char yGn[65] = __yGn__;
     big xG,yG;//椭圆曲线基点
     epoint *g,*pA,*p1;
     bool yisnull = false;
@@ -180,6 +186,7 @@ void SM2::calP2(big k,big xB,big yB,big x2,big y2)
 
 bool SM2::notIn_1n(big __x)
 {
+    char nn[65] = __nn__;
     big cmp0;//0
     big cmpn;//n
     bool res1,res2;
@@ -195,6 +202,7 @@ bool SM2::notIn_1n(big __x)
 
 bool SM2::is_n(big __x)
 {
+    char nn[65] = __nn__;
     big cmpn;
     bool res;
     cmpn = mirvar(0);

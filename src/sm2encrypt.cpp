@@ -5,14 +5,14 @@ extern "C"
 #include <iostream>
 #include <stdlib.h>
 #include <memory.h>
-#include "sm3.c"
+#include "sm3.h"
 #include "sm2encrypt.h"
 #include "sm2type.h"
 #include "sm2init.h"
 #include "sm2calculators.h"
 #include "sm2KDF.h"
 #include "sm2StreamString.h"
-#include "sm2parameter.h"
+//#include "sm2parameter.h"
 
 using namespace std;
 using namespace SM2;

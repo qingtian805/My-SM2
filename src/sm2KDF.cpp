@@ -4,7 +4,7 @@ extern "C"
 }
 #include <math.h>
 #include <memory.h>
-#include "sm3.c"
+#include "sm3.h"
 #include "sm2KDF.h"
 #include "sm2type.h"
 
