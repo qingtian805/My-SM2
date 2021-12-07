@@ -45,6 +45,8 @@ bool encryptMessage(char* message,int messagelen,char* xBn,char* yBn,char* emess
     x2 = mirvar(0);
     y2 = mirvar(0);
 
+    pB = epoint_init();
+
     cinstr(xB,xBn);//初始化pB用于判断是否位于无限远点
     cinstr(yB,yBn);
 
@@ -52,6 +54,7 @@ bool encryptMessage(char* message,int messagelen,char* xBn,char* yBn,char* emess
     {
         //step 1
         genRandom(k);
+        
         //step 2
         calP1(k,x1,y1);
         big_to_bytes(0,x1,(char*)x1b,FALSE);
@@ -83,13 +86,13 @@ bool encryptMessage(char* message,int messagelen,char* xBn,char* yBn,char* emess
     memcpy(hash+32+messagelen,y2b,32);
     sm3(hash,messagelen+64,C3);
     //step 8
-    emessage[0] = 4;
+    emessage[0] = 4;//C1
     memcpy(emessage+1,x1b,32);
     memcpy(emessage+33,y1b,32);
 
-    memcpy(emessage+65,key,messagelen);
+    memcpy(emessage+65,C3,32);
 
-    memcpy(emessage+messagelen+65,C3,32);
+    memcpy(emessage+97,key,messagelen);
 
 EXIT_FE:
     mirkill(k);
@@ -173,17 +176,16 @@ bool decryptMessage(char* emessage,int emessagelen,char* dBn,char* message)
     //step 4
     memcpy(hash,x2b,32);
     memcpy(hash+32,y2b,32);
-    KDF((char*)hash,64,messagelen,(char*)key);
+    KDF((char*)hash,64,messagelen*8,(char*)key);
     //step 5 and some of step 6
     for(int i = 0;i<messagelen;i++)//hash[32~messagelen+32] = message
     {
-        hash[32+i] = emessage[65+i] ^ key[i];
+        hash[32+i] = emessage[97+i] ^ key[i];
     }
     //step 6
-    //memcpy(hash+32,emessage,emessagelen);
     memcpy(hash+messagelen+32,y2b,32);//hash + 32 + emessagelen - 97
     sm3(hash,messagelen+64,u);
-    if(memcmp(u,emessage+emessagelen-32,32) != 0)
+    if(memcmp(u,emessage+65,32) != 0)
     {
         cout << "ERROR! Message may be modified!" << endl;
         ret = false;

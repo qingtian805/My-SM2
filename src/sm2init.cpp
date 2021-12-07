@@ -7,7 +7,7 @@ extern "C"
 
 using namespace SM2;
 
-bool init_mircal(miracl *mip)
+bool SM2::init_miracl(miracl *mip)
 {
     mip = mirsys(64,16);
     if(mip == NULL)
@@ -18,7 +18,7 @@ bool init_mircal(miracl *mip)
     return true;
 }
 
-void init_ecruve(void)
+void SM2::init_ecruve(void)
 {
     char an[65] = __an__;
     char bn[65] = __bn__;

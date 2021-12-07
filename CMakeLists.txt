@@ -9,10 +9,10 @@ file(GLOB SRC_FILES
     ${PROJECT_SOURCE_DIR}/src/*.cpp 
     ${PROJECT_SOURCE_DIR}/src/*.c)#搜索src中所有可编译文件
 
-add_executable(my-sm2-enctest testenc ${SRC_FILES}) #加解密测试
-add_executable(my-sm2-sigtest testsig ${SRC_FILES}) #签名测试
+add_executable(my-sm2-enctest enctest.cpp ${SRC_FILES}) #加解密测试
+add_executable(my-sm2-sigtest sigtest.cpp ${SRC_FILES}) #签名测试
 
-add_executable(my-sm2-test testsm2.cpp ${SRC_FILES}) #所有测试
+add_executable(my-sm2-test sm2test.cpp ${SRC_FILES}) #所有测试
 
 add_executable(my-sm2-TOTPclient OTPclient.cpp src/TOTP.cpp src/sm3.c)#totp客户端成品
 
