@@ -7,8 +7,11 @@ This repo stores its code.
 
 ### Prime Folder ./
 
+**CMakeList.txt** Cmake list, of my project.  
 **notes.md** A studing note of basic knowledge.  
+**OTPclient.cpp** OTP client main file, using TOTP.cpp.  
 **README.md** Common ReadMe file.  
+**enctest.cpp** test file for encryption.  
 
 ### Source ./src
 
@@ -20,6 +23,8 @@ This repo stores its code.
 **sm2signment.cpp** Main functions of SM2 signment.  
 **sm2StreamString.cpp** Contains two functions converts stream and string.  
 **TOTP.cpp** C++ version of TOTP using SM3.  
+**sm3.c** sm3 file by qq_36298219 at [CSDN](https://blog.csdn.net/qq_36298219/article/details/85926747).  
+**sm4.cpp** SM4 source file by [tonyonce2017](https://github.com/tonyonce2017/SM4).  
 
 ### Include file ./include/
 
@@ -33,11 +38,16 @@ This repo stores its code.
 **sm2sigment.h** Header of sm2sigment.cpp.  
 **sm2StreamString.h** Header of sm2StreamString.cpp.  
 **sm2type.h** Header contains self defined types of my SM2 system.  
-**sm3.c sm3.h** SM3 project by another coder and you can find them on [here](https://blog.csdn.net/qq_36298219/article/details/85926747).  
+**sm3.h** SM3 project by qq_36298219 and you can find them on [here](https://blog.csdn.net/qq_36298219/article/details/85926747).  
+**sm4.h** SM4 header by [tonyonce2017](https://github.com/tonyonce2017/SM4).  
 
 ### Libraries ./lib/
 
-**libmiracl.a** Complied MIRACL lib file.
+**libmiracl.a** Complied MIRACL lib file.  
+
+### SM4-main ./SM4-main/
+
+**README.md** README file of SM4 project by [tonyonce2017](https://github.com/tonyonce2017/SM4).
 
 ## Feature
 As for limited time and my poor code ability, the function of My-SM2 is very limited which means it can only verify keys.  
@@ -54,6 +64,6 @@ Some new features may be added.
    1. Split functions in signment. FINISHED  
    2. Divide SM2 into several files. FINISHED
    3. Develop SM2 into a lib like format. FINISHED
-   4. Finish encrypt function.  
+   4. Finish encrypt function. FINISHED  
    5. Point compression function.  
    6. Develop key exchange function.  
