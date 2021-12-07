@@ -20,6 +20,9 @@ bool init_mircal(miracl *mip)
 
 void init_ecruve(void)
 {
+    char an[65] = __an__;
+    char bn[65] = __bn__;
+    char pn[65] = __pn__;
     big a,b,p;//椭圆曲线参数
     a = mirvar(0);
     b = mirvar(0);
