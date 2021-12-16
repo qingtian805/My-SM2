@@ -28,6 +28,7 @@ namespace TOTP{
     int __pow();
 
     //TOTP主函数，输入K返回cotp
+    //返回为C字符串类型，请准备数字位数+1长度的空间
     bool TOTP(char *K,char * cotp);
 };
 #endif

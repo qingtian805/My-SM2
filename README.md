@@ -7,8 +7,10 @@ This repo stores its code.
 
 ### Prime Folder ./
 
-**CMakeList.txt** Cmake list, of my project.  
-**notes.md** A studing note of basic knowledge.  
+**certify_server.cpp** A very simple usage of my-sm2, SM3 and SM4.This file is its server program source.  
+**certify_client.cpp** A very simple usage of my-sm2, SM3 and SM4.This file is its client program source.  
+**CMakeList.txt** CMake list, of my project. If you don`t know how it works, please refer to CMake.  
+**notes.md** A studing note of basic ECC knowledge.  
 **OTPclient.cpp** OTP client main file, using TOTP.cpp.  
 **README.md** Common ReadMe file.  
 **enctest.cpp** test file for encryption.  
@@ -28,7 +30,7 @@ This repo stores its code.
 
 ### Include file ./include/
 
-**mir\*.\*** [MIRACL](https://github.com/miracl/MIRACL) lib files. Using for educational propose. In replace of [uint256_t](https://github.com/calccrypto/uint256_t) which was used to deal with bignum calculations.  
+**mir\*.\*** [MIRACL](https://github.com/miracl/MIRACL) lib files. Using for educational propose. In replace of [uint256_t](https://github.com/calccrypto/uint256_t) which was used to deal with bignum calculations and been deleted now.  
 **sm2.h** The master include file. Includes all main functions.  
 **sm2calculators.h** Header of sm2calculators.cpp.  
 **sm2encrypt.h** Header of sm2encrypt.cpp.  

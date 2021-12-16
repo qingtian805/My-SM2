@@ -18,7 +18,7 @@ void signalHandler(int signum)
 
 int main(void)
 {
-    char key[] = "SVUKRBXFLEOFZGQMC";//演示用Key，可以更改从文件获取
+    char key[] = "SVUKRBXFLEOFZGQM";//演示用Key，可以更改从文件获取
     char cotp[7];//TOTP计算结果
     time_t t;//当前时间
     int tremain;//剩余时间

@@ -16,6 +16,11 @@ add_executable(my-sm2-test sm2test.cpp ${SRC_FILES}) #所有测试
 
 add_executable(my-sm2-TOTPclient OTPclient.cpp src/TOTP.cpp src/sm3.c)#totp客户端成品
 
+add_executable(certify-client certify_client.cpp ${SRC_FILES})
+add_executable(certify-server certify_server.cpp ${SRC_FILES})
+
 target_link_libraries(my-sm2-enctest miracl)
 target_link_libraries(my-sm2-sigtest miracl)
 target_link_libraries(my-sm2-test miracl)
+target_link_libraries(certify-client miracl)
+target_link_libraries(certify-server miracl)

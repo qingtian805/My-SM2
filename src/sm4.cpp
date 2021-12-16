@@ -388,9 +388,9 @@ std::string sm4::decrypt(const std::string &data) {
         sm4_crypt_cbc(&ctx, 0, length, _iv, input, output);
     }
 
-    length = length - (int) output[length - 1];
-    if (length < 0)
-        return std::string();
+    //length = length - (int) output[length - 1];
+    //if (length < 0)
+    //    return std::string();
 
     std::string ret;
     ret.assign((const char *) output, length);
