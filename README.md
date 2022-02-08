@@ -14,6 +14,7 @@ This repo stores its code.
 **OTPclient.cpp** OTP client main file, using TOTP.cpp.  
 **README.md** Common ReadMe file.  
 **enctest.cpp** test file for encryption.  
+**gektest.cpp** test file for key generate and key managing.  
 
 ### Source ./src
 
@@ -21,6 +22,7 @@ This repo stores its code.
 **sm2encrypt.cpp** Main functions of SM2 encryption.  
 **sm2init.cpp** Initalizing funcions.  
 **sm2KDF.cpp** KDF assisting function.  
+**sm2keymgr.cpp** Key pair generating function and pubkey verify function.  
 **sm2old.cpp** The main file of my project, contines the final version of My-SM2 when the summer pratical training over.  
 **sm2signment.cpp** Main functions of SM2 signment.  
 **sm2StreamString.cpp** Contains two functions converts stream and string.  
@@ -36,6 +38,7 @@ This repo stores its code.
 **sm2encrypt.h** Header of sm2encrypt.cpp.  
 **sm2init.h** Header of  
 **sm2KDF.h** Header of sm2KDF.cpp.  
+**sm2keymgr.h** Header of sm2keymgr.cpp.  
 **sm2parameter.h** Header contains parameters used in SM2 system.  
 **sm2sigment.h** Header of sm2sigment.cpp.  
 **sm2StreamString.h** Header of sm2StreamString.cpp.  
@@ -67,5 +70,6 @@ Some new features may be added.
    2. Divide SM2 into several files. FINISHED
    3. Develop SM2 into a lib like format. FINISHED
    4. Finish encrypt function. FINISHED  
-   5. Point compression function.  
-   6. Develop key exchange function.  
+   5. Searching for some details I didn`t noticed and complete them.  
+   6. Point compression function.  
+   7. Develop key exchange function.  

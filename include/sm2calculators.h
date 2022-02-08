@@ -27,6 +27,12 @@ namespace SM2
     //输出：k 大小位于[1,n-1]的整数随机数
     void genRandom(big k);
 
+    //生成随机数k in [1,n-2]
+    //编译器定义：SEED 随机数生成种子
+    //从系统获取：time 时间，作为种子
+    //输出：k 大小位于[1,n-2]的整数随机数
+    void genRandom2(big k);
+
     //计算r = (e + x1)mod n
     //计算R = (e`+ x1`)mod n
     //计算t = (r`+ s`)mod n
@@ -37,6 +43,7 @@ namespace SM2
 
     //计算签名公钥 P1(x1,y1) = [k]G
     //输出：x1 取出的坐标x值
+    //     y1 取出的坐标y值
     void calP1(big k,big x1,big y1);
 
     //计算椭圆曲线点P1`(x1`,y1`)=[s`]G+[t]PA

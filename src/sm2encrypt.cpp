@@ -63,7 +63,7 @@ bool encryptMessage(char* message,int messagelen,char* xBn,char* yBn,char* emess
         epoint_set(xB,yB,0,pB);
         if(point_at_infinity(pB))
         {
-            cout << "ERROR！ B`s public key is invalid!" << endl;
+            cout << "ERROR! B`s public key is invalid!" << endl;
             ret = false;
             goto EXIT_FE;
         }
@@ -137,7 +137,7 @@ bool decryptMessage(char* emessage,int emessagelen,char* dBn,char* message)
 
     cinstr(dB,dBn);
 
-    //step 1 功能：取出曲线点并验证有效性 等待被替换
+    //step 1 功能:取出曲线点并验证有效性 等待被替换
     switch (emessage[0])
     {
     case 4:
