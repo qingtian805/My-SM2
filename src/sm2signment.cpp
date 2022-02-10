@@ -48,14 +48,14 @@ void genZA(char *ID,int IDlen,char *xAn,char *yAn,char* ZA)
     streamToString((byte*)ZA,32,ZA);
 }
 
-bool genSignment(char* ZAn,char* dAn,unsigned char* message,int messagelen,char* rn,char* sn)
+int genSignment(char* ZAn,char* dAn,unsigned char* message,int messagelen,char* rn,char* sn)
 {
     //init MIRACL
     miracl *mip;
     if(! init_miracl(mip))
     {
         cout << "MIRACL INIT FALTAL" << endl;
-        return false;
+        return -1;
     }
     init_ecruve();
 
@@ -115,7 +115,7 @@ EXIT_FS:
     mirkill(s);
     mirkill(dA);
     mirexit();
-    return true;
+    return 0;
 }
 
 bool verifySignment(char* ZAn,char* xAn,char* yAn,unsigned char* message,int messagelen,char* rn,char* sn)
@@ -124,11 +124,11 @@ bool verifySignment(char* ZAn,char* xAn,char* yAn,unsigned char* message,int mes
     if(! init_miracl(mip))
     {
         cout << "MIRACL INIT FALTAL" << endl;
-        return 0;
+        return -1;
     }
     init_ecruve();
 
-    bool ret;
+    int ret = 0;
     big r,s;
     big e;
     big t;
@@ -149,16 +149,14 @@ bool verifySignment(char* ZAn,char* xAn,char* yAn,unsigned char* message,int mes
     byte _message[messagelen+32];
 
     //step1
-    if(notIn_1n(r))
+    if(! in_1n1(r))//r 不在 [1,n-1] 则不通过
     {
-        ret = false;
         goto EXIT_FV;
     }
 
     //step2
-    if(notIn_1n(s))
+    if(! in_1n1(s))//s 不在 [1,n-1] 则不通过
     {
-        ret = false;
         goto EXIT_FV;
     }
 
@@ -170,9 +168,8 @@ bool verifySignment(char* ZAn,char* xAn,char* yAn,unsigned char* message,int mes
 
     //step5
     calrt(r,s,t);
-    if(is_zero(t))
+    if(is_zero(t))//t = 0，则不通过
     {
-        ret = false;
         goto EXIT_FV;
     }
 
@@ -181,17 +178,12 @@ bool verifySignment(char* ZAn,char* xAn,char* yAn,unsigned char* message,int mes
 
     //step7
     calrt(e,x1,R);
-    if(is_equal(R,r))
+    if(! is_equal(R,r))//R != r，则不通过
     {
-        ret = true;
-        goto EXIT_FV;
-    }
-    else
-    {
-        ret = false;
         goto EXIT_FV;
     }
 
+    ret = 0;
 EXIT_FV:
     mirkill(r);
     mirkill(s);

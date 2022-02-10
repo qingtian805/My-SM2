@@ -52,10 +52,10 @@ namespace SM2
     //计算椭圆曲线点P2(x2,y2) = [k]PB(xB,yB)
     void calP2(big k,big xB,big yB,big x2,big y2);
     
-    //返回：判断输入给出数值是否处于[1,n-1]，如果不在则返回真
-    bool notIn_1n(big __x);
+    //返回：判断输入给出数值是否处于[1,n-1]，在则返回真
+    bool in_1n1(big __x);
 
-    //返回：判断输入是否等于n
+    //返回：判断输入是否等于n，相等则返回真
     bool is_n(big __x);
 
     //返回：判断给出数值是否为0，为0返回真

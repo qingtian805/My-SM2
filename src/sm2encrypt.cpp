@@ -17,16 +17,17 @@ extern "C"
 using namespace std;
 using namespace SM2;
 
-bool encryptMessage(char* message,int messagelen,char* xBn,char* yBn,char* emessage)
+int encryptMessage(char* message,int messagelen,char* xBn,char* yBn,char* emessage)
 {
     miracl *mip;
     if(! init_miracl(mip))
     {
         cout << "MIRACL INIT FALTAL" << endl;
+        return -1;
     }
     init_ecruve();
 
-    bool ret = true;
+    int ret = -1;
     byte x1b[32],y1b[32];//p1的比特串形态
     byte x2b[32],y2b[32];//p2的比特串形态
     byte key[messagelen];//KDF生成的密钥t，也作为加密后的C2
@@ -64,7 +65,6 @@ bool encryptMessage(char* message,int messagelen,char* xBn,char* yBn,char* emess
         if(point_at_infinity(pB))
         {
             cout << "ERROR! B`s public key is invalid!" << endl;
-            ret = false;
             goto EXIT_FE;
         }
         //step 4
@@ -94,6 +94,7 @@ bool encryptMessage(char* message,int messagelen,char* xBn,char* yBn,char* emess
 
     memcpy(emessage+97,key,messagelen);
 
+    ret = 0;
 EXIT_FE:
     mirkill(k);
     mirkill(x1);
@@ -106,17 +107,18 @@ EXIT_FE:
     return ret;
 }
 
-bool decryptMessage(char* emessage,int emessagelen,char* dBn,char* message)
+int decryptMessage(char* emessage,int emessagelen,char* dBn,char* message)
 {
     miracl *mip;
     if(! init_miracl(mip))
     {
         cout << "MIRACL INIT FALTAL" << endl;
+        return -1;
     }
     init_ecruve();
 
+    int ret = -1;
     int messagelen = emessagelen-97;//原信息长度
-    bool ret = true;
     char x1n[65];
     char y1n[65];
     byte x2b[32];
@@ -149,15 +151,12 @@ bool decryptMessage(char* emessage,int emessagelen,char* dBn,char* message)
     
     default:
         cout << "unsupported point format!" << endl;
-        ret = false;
         goto EXIT_FD;
-        break;
     }
 
     if(! epoint_set(x1,y1,0,p1))
     {
         cout << "ERROR! Point is not on your ecruve!" << endl;
-        ret = false;
         goto EXIT_FD;
     }
 
@@ -165,7 +164,6 @@ bool decryptMessage(char* emessage,int emessagelen,char* dBn,char* message)
     if(point_at_infinity(p1))
     {
         cout << "ERROR! Using invalid public key!" << endl;
-        ret = false;
         goto EXIT_FD;
     }
 
@@ -188,12 +186,12 @@ bool decryptMessage(char* emessage,int emessagelen,char* dBn,char* message)
     if(memcmp(u,emessage+65,32) != 0)
     {
         cout << "ERROR! Message may be modified!" << endl;
-        ret = false;
         goto EXIT_FD;
     }
     //step 7
     memcpy(message,hash+32,messagelen);
 
+    ret = 0;
 EXIT_FD:
     mirkill(x1);
     mirkill(y1);

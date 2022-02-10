@@ -15,7 +15,8 @@ void genZA(char *ID,int IDlen,char *xAn,char *yAn,unsigned char* ZA);
 //  message 签名信息
 //  messagelen 信息长度(字节)，如果是字符串请考虑末尾\0的增加与否，增加则+1
 //输出：rn[65] sn[65] 签名密钥对
-bool genSignment(char* ZA,char* dAn,char* message,int messagelen,
+//返回：int 0 签名生成成功 -1 出现错误
+int genSignment(char* ZA,char* dAn,char* message,int messagelen,
                             char* rn,char* sn);
 
 //SM2椭圆曲线算法签名验证函数
@@ -24,8 +25,8 @@ bool genSignment(char* ZA,char* dAn,char* message,int messagelen,
 //  message 签名信息
 //  messagelen 信息长度(字节)，如果是字符串请考虑末尾\0的增加与否，增加则+1
 //  rn sn 签名密钥对
-//返回：签验证结果，true验证成功，false验证失败
-bool verifySignment(char* ZA,char* xAn,char* yAn,char* message,int messagelen,
+//返回：int 1 签名验证成功，0 验证失败，-1 出现错误
+int verifySignment(char* ZA,char* xAn,char* yAn,char* message,int messagelen,
                                 char* rn,char* sn);
 
 #endif

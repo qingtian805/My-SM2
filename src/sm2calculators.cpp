@@ -73,7 +73,7 @@ void SM2::genRandom2(big k)
     do
     {
     irand(time(NULL)+SEED);
-    bigrand(n,k);// 0 <= k < n
+    bigrand(n,k);// 0 <= k < n, n=n-1
     }while(is_zero(k));//是0则重新生成
 
     mirkill(n);
@@ -219,7 +219,7 @@ void SM2::calP2(big k,big xB,big yB,big x2,big y2)
     epoint_free(p2);
 }
 
-bool SM2::notIn_1n(big __x)
+bool SM2::in_1n1(big __x)
 {
     char nn[65] = __nn__;
     big cmp0;//0
@@ -228,11 +228,11 @@ bool SM2::notIn_1n(big __x)
     cmp0 = mirvar(0);
     cmpn = mirvar(0);
     cinstr(cmpn,nn);
-    res1 = (mr_compare(__x,cmp0) == 0);// == 0
-    res2 = (mr_compare(__x,cmpn) >= 0);// >= n
+    res1 = (mr_compare(__x,cmp0) > 0);//x > 0
+    res2 = (mr_compare(__x,cmpn) < 0);//x < n
     mirkill(cmp0);
     mirkill(cmpn);
-    return res1||res2; // ==0 || >=n
+    return res1&&res2; // >=0 && <n
 }
 
 bool SM2::is_n(big __x)
