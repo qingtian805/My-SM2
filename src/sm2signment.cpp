@@ -183,7 +183,7 @@ bool verifySignment(char* ZAn,char* xAn,char* yAn,unsigned char* message,int mes
         goto EXIT_FV;
     }
 
-    ret = 0;
+    ret = 1;
 EXIT_FV:
     mirkill(r);
     mirkill(s);
