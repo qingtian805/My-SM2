@@ -112,7 +112,36 @@ LOW:
             pr++;
             pm++;
         }
-        
+    }
+}
+
+void SM2::stringsub1(char* string,int stringlen,char* ostring)
+{
+    int pn = stringlen - 1;
+
+    while(true)//使用字符串处理完成n-1
+    {
+        ostring[pn] = string[pn] - 1;
+        if(ostring[pn] < '0')//如果当前位结果<1
+        {
+            ostring[pn] = 'F';
+            pn--;
+            continue;
+        }
+        else if(ostring[pn] < 'A' && ostring[pn] > '9')//如果当前位结果<A
+        {
+            ostring[pn] = '9';
+        }
+        break;
+    }
+
+    if(ostring!=string)//如果是新字符串，则重新构建
+    {
+        ostring[stringlen] = '\0';
+        for(pn--;pn>=0;pn--)
+        {
+            ostring[pn] = string[pn];
+        }
     }
 }
 
@@ -124,6 +153,8 @@ int main(){
     char origin[65];//存储转换后的字符串
     unsigned char test[32];//存储再次转换后的字节串
     sm3(b,9,res);
+
+    cout << "---stream string coverting test---" << endl;
     streamToString(res,32,origin);
     cout << origin <<endl;
     stringToStream(origin,63,test);//测试不同地址情况，单数
@@ -133,6 +164,17 @@ int main(){
     stringToStream(origin,63,(byte*)origin);//相同地址情况，单数
     streamToString(res,32,origin);
     stringToStream(origin,64,(byte*)origin);//相同地址，双数
+
+    cout << "--------string sub 1 test---------" << endl;
+    char nn[65] = "FFFFFFFEFFFFFFFFFFFFFFFFFFFFFFFF7203DF6B21C6052B53BBF40939D54A01";
+    char nns[65];
+    
+    cout << nn << endl;
+    stringsub1(nn,64,nn);
+    cout << nn << endl;
+    stringsub1(nn,64,nns);
+    cout << nns << endl;
+    cout << nn << endl;
     
     return 0;
 }

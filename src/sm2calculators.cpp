@@ -31,8 +31,8 @@ void SM2::genRandom(big k)
 {
     char nn[65] = __nn__; 
     big n;
-
     n = mirvar(0);
+
     cinstr(n,nn);
 
     do
@@ -48,25 +48,9 @@ void SM2::genRandom2(big k)
 {
     char nn[65] = __nn__;
     big n;
-    int pn = 63;
     n = mirvar(0);
-
-    while(true)//使用字符串处理完成n-1
-    {
-        nn[pn]--;
-        if(nn[pn] < '0')//如果当前位结果<1
-        {
-            nn[pn] = 'F';
-            pn--;
-            continue;
-        }
-        else if(nn[pn] < 'A' && nn[pn] > '9')//如果当前位结果<A
-        {
-            nn[pn] = '9';
-        }
-      
-        break;
-    }
+    
+    stringsub1(nn,65,nn);//n=n-1
 
     cinstr(n,nn);
     
