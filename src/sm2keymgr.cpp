@@ -28,7 +28,11 @@ bool SM2::verify_pubkey(big Px, big Py)
     tmp2 = mirvar(0);
 
     P = epoint_init();
-    epoint_set(Px,Py,0,P);
+    
+    if(! epoint_set(Px,Py,0,P)){
+        ret = -1;
+        goto EXIT_VP;
+    }
 
     //step 1 p infinity
     if(point_at_infinity(P)){
@@ -99,7 +103,7 @@ EXIT_FG:
     return 0;
 }
 
-int verify_pubkey(char* Pxn, char* Pyn)
+int verify_pubkey(char *Pxn, char *Pyn)
 {
     miracl *mip;
     if(! init_miracl(mip))
@@ -109,13 +113,13 @@ int verify_pubkey(char* Pxn, char* Pyn)
     }
     init_ecruve();
 
-    int ret = 0;
-    big Py,Px;
+    int ret;
+    big Px,Py;
+    Px = mirvar(0);
     Py = mirvar(0);
-    Px = mirvar(9);
 
-    cinstr(Py,Pyn);
     cinstr(Px,Pxn);
+    cinstr(Py,Pyn);
 
     ret = SM2::verify_pubkey(Px,Py);
 

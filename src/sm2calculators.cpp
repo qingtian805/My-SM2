@@ -50,7 +50,7 @@ void SM2::genRandom2(big k)
     big n;
     n = mirvar(0);
     
-    stringsub1(nn,65,nn);//n=n-1
+    stringsub1(nn,64,nn);//n=n-1
 
     cinstr(n,nn);
     
@@ -245,7 +245,7 @@ bool SM2::in_1n1(big __x)
     cmp1 = mirvar(1);
     cmpn = mirvar(0);
 
-    SM2::stringsub1(nn,65,nn);//n = n - 1
+    SM2::stringsub1(nn,64,nn);//n = n - 1
 
     cinstr(cmpn,nn);
 
@@ -265,7 +265,7 @@ bool SM2::in_0p1(big __x)
     cmp0 = mirvar(0);
     cmpp = mirvar(0);
 
-    SM2::stringsub1(pn,65,pn);
+    SM2::stringsub1(pn,64,pn);
     
     cinstr(cmpp,pn);
 
