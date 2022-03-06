@@ -14,7 +14,8 @@ extern "C"
 #include "sm2StreamString.h"
 //#include "sm2parameter.h"
 
-using namespace std;
+using std::cout;
+using std::endl;
 using namespace SM2;
 
 int encryptMessage(char* message,int messagelen,char* xBn,char* yBn,char* emessage)

@@ -5,7 +5,8 @@
 #ifdef __SM2_DEBUG_SS__
 #include<iostream>
 #include"sm3.h"
-using namespace std;
+using std::cout;
+using std::endl;
 #endif
 
 using namespace SM2;

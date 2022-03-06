@@ -11,9 +11,9 @@ file(GLOB SRC_FILES
 
 add_executable(my-sm2-gektest gektest.cpp ${SRC_FILES}) #密钥对生成测试
 add_executable(my-sm2-enctest enctest.cpp ${SRC_FILES}) #加解密测试
-add_executable(my-sm2-sigtest sigtest.cpp ${SRC_FILES}) #签名测试
+#add_executable(my-sm2-sigtest sigtest.cpp ${SRC_FILES}) #签名测试
 
-add_executable(my-sm2-test sm2test.cpp ${SRC_FILES}) #所有测试
+#add_executable(my-sm2-test sm2test.cpp ${SRC_FILES}) #所有测试
 
 add_executable(my-sm2-TOTPclient OTPclient.cpp src/TOTP.cpp src/sm3.c)#totp客户端成品
 
@@ -22,7 +22,7 @@ add_executable(certify-server certify_server.cpp ${SRC_FILES})
 
 target_link_libraries(my-sm2-gektest miracl)
 target_link_libraries(my-sm2-enctest miracl)
-target_link_libraries(my-sm2-sigtest miracl)
-target_link_libraries(my-sm2-test miracl)
+#target_link_libraries(my-sm2-sigtest miracl)
+#target_link_libraries(my-sm2-test miracl)
 target_link_libraries(certify-client miracl)
 target_link_libraries(certify-server miracl)

@@ -12,7 +12,8 @@ extern "C"
 #include "sm2parameter.h"
 #include "sm2StreamString.h"
 
-using namespace std;
+using std::cout;
+using std::endl;
 using namespace SM2;
 
 void genZA(char *ID,int IDlen,char *xAn,char *yAn,char* ZA)

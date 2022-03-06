@@ -9,7 +9,8 @@ extern "C"
 #include "sm2StreamString.h"
 #include "sm2type.h"
 
-using namespace std;
+using std::cout;
+using std::endl;
 using namespace SM2;
 
 void SM2::gen_keypair(big d,big Px,big Py)
