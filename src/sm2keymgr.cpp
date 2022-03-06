@@ -19,13 +19,59 @@ void SM2::gen_keypair(big d,big Px,big Py)
     calP1(d,Px,Py);
 }
 
-bool gen_keypair(char* dn, char*Pxn, char* Pyn)
+bool SM2::verify_pubkey(big Px, big Py)
+{
+    bool ret = true;
+    epoint *P;
+    big tmp1,tmp2;
+    tmp1 = mirvar(0);
+    tmp2 = mirvar(0);
+
+    P = epoint_init();
+    epoint_set(Px,Py,0,P);
+
+    //step 1 p infinity
+    if(point_at_infinity(P)){
+        ret = false;
+        goto EXIT_VP;
+    }
+    
+    //step 2 in [0,p-1]
+    if(! in_0p1(Px) || !in_0p1(Py)){
+        ret = false;
+        goto EXIT_VP;
+    }
+    
+    //step 3 yp^2=xp^3+axp+b
+    pow(Py,2,tmp1);//计算左值
+    calfumula1(Px,tmp2);//计算右值
+
+    if(! is_equal(tmp1,tmp2)){
+        ret = false;
+        goto EXIT_VP;
+    }
+
+    //step 4 [n]P infinity
+    calnP(Px,Py,tmp1,tmp2);
+    epoint_set(tmp1,tmp2,0,P);
+
+    if(point_at_infinity(P)){
+        ret = false;
+    }
+
+EXIT_VP:
+    mirkill(tmp1);
+    mirkill(tmp2);
+    return ret;
+}
+
+int gen_keypair(char* dn, char*Pxn, char* Pyn)
 {
     miracl *mip;
     if(! init_miracl(mip))
     {
         cout << "MIRACL INIT FALTAL" << endl;
-        return false;
+        return -1;
     }
     init_ecruve();
 
@@ -45,15 +91,35 @@ bool gen_keypair(char* dn, char*Pxn, char* Pyn)
     streamToString((byte*)Pxn,32,Pxn);
     streamToString((byte*)Pyn,32,Pyn);
 
-EXIT_F:
+EXIT_FG:
     mirkill(d);
     mirkill(Px);
     mirkill(Py);
     mirexit();
-    return true;
+    return 0;
 }
 
-bool SM2::verify_pubkey(big Px, big Py)
+int verify_pubkey(char* Pxn, char* Pyn)
 {
-    
+    miracl *mip;
+    if(! init_miracl(mip))
+    {
+        cout << "MIRACL INIT FALTAL" << endl;
+        return -1;
+    }
+    init_ecruve();
+
+    int ret = 0;
+    big Py,Px;
+    Py = mirvar(0);
+    Px = mirvar(9);
+
+    cinstr(Py,Pyn);
+    cinstr(Px,Pxn);
+
+    ret = SM2::verify_pubkey(Px,Py);
+
+    mirkill(Px);
+    mirkill(Py);
+    return ret;
 }

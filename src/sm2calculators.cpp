@@ -37,8 +37,8 @@ void SM2::genRandom(big k)
 
     do
     {
-    irand(time(NULL)+SEED);
-    bigrand(n,k);// 0 <= k < n
+        irand(time(NULL)+SEED);
+        bigrand(n,k);// 0 <= k < n
     }while(is_zero(k));//是0则重新生成
 
     mirkill(n);
@@ -56,8 +56,8 @@ void SM2::genRandom2(big k)
     
     do
     {
-    irand(time(NULL)+SEED);
-    bigrand(n,k);// 0 <= k < n, n=n-1
+        irand(time(NULL)+SEED);
+        bigrand(n,k);// 0 <= k < n, n=n-1
     }while(is_zero(k));//是0则重新生成
 
     mirkill(n);
@@ -110,41 +110,51 @@ void SM2::cals(big k,big dA,big r,big s)
     mirkill(n);
 }
 
+void SM2::calP(big k,big x1,big y1,big x2,big y2)
+{
+    epoint *p1,*p2;
+
+    p1 = epoint_init();
+    p2 = epoint_init();
+
+    epoint_set(x1,y1,0,p1);//设置点
+    
+    ecurve_mult(k,p1,p2);//计算点乘
+
+    epoint_get(p2,x2,y2);//取出坐标
+
+    epoint_free(p1);
+    epoint_free(p2);
+}
+
 void SM2::calP1(big k,big x1,big y1)
 {
     char xGn[65] = __xGn__;
     char yGn[65] = __yGn__;
     big xG,yG;//椭圆曲线基点
-    epoint *g,*p1;
-    bool yisnull = false;
-    
-
-    if(y1 == NULL)
-    {
-        y1 = mirvar(0);
-        yisnull = true;
-    }
 
     xG = mirvar(0);//初始化参数
     yG = mirvar(0);
     cinstr(xG,xGn);
     cinstr(yG,yGn);
 
-    g = epoint_init();
-    p1 = epoint_init();
-    epoint_set(xG,yG,0,g);
+    calP(k,xG,yG,x1,y1);
 
-    ecurve_mult(k,g,p1);//p=[k]g
-    epoint_get(p1,x1,y1);//取出参数
-
-    if(yisnull){
-        mirkill(y1);
-    }
     mirkill(xG);//函数清理
     mirkill(yG);
+}
 
-    epoint_free(g);
-    epoint_free(p1);
+void SM2::calnP(big x1 ,big y1, big x2, big y2)
+{
+    char nn[65] = __nn__;
+    big n;
+
+    n = mirvar(0);
+    cinstr(n,nn);
+
+    calP(n,x1,y1,x2,y2);
+
+    mirkill(n);
 }
 
 void SM2::cal_P1(big s,big t,big xA,big yA,big x1,big y1)
@@ -153,13 +163,6 @@ void SM2::cal_P1(big s,big t,big xA,big yA,big x1,big y1)
     char yGn[65] = __yGn__;
     big xG,yG;//椭圆曲线基点
     epoint *g,*pA,*p1;
-    bool yisnull = false;
-
-    if(y1 == NULL)
-    {
-        yisnull = true;
-        y1 = mirvar(0);
-    }
 
     xG = mirvar(0);//初始化参数
     yG = mirvar(0);
@@ -175,10 +178,6 @@ void SM2::cal_P1(big s,big t,big xA,big yA,big x1,big y1)
     ecurve_mult2(s,g,t,pA,p1);//p1 = [s]g + [t]pA
     epoint_get(p1,x1,y1);
 
-    if(yisnull)
-    {
-        mirkill(y1);
-    }
     mirkill(xG);//函数清理
     mirkill(yG);
 
@@ -187,36 +186,94 @@ void SM2::cal_P1(big s,big t,big xA,big yA,big x1,big y1)
     epoint_free(p1);
 }
 
-void SM2::calP2(big k,big xB,big yB,big x2,big y2)
+void SM2::calfumula_1(big x,big a,big b,big y)
 {
-    epoint *pB,*p2;
+    char pn[65] = __pn__;
+    big p;
+    p = mirvar(0);
+    cinstr(p,pn);
+    power(x,3,p,y);//y=x^3 mod p
 
-    pB = epoint_init();
-    p2 = epoint_init();
+    add(y,b,y);//y=y+b
+    divide(y,p,p);//y=y mod p
 
-    epoint_set(xB,yB,0,pB);
-    ecurve_mult(k,pB,p2);
+    mad(x,a,y,p,p,y);//y = ax+y mod p
 
-    epoint_get(p2,x2,y2);
+    mirkill(p);
+}
 
-    epoint_free(pB);
-    epoint_free(p2);
+void SM2::calfumula1(big x,big y)
+{
+    char an[65] = __an__;
+    char bn[65] = __bn__;
+    big a,b;
+    a = mirvar(0);
+    b = mirvar(0);
+
+    cinstr(a,an);
+    cinstr(b,bn);
+
+    calfumula_1(x,a,b,y);
+
+    mirkill(a);
+    mirkill(b);
+}
+
+void SM2::pow(big x,long n,big y)
+{
+    char pn[65] = __pn__;
+    big p;
+    p = mirvar(0);
+    cinstr(p,pn);
+
+    power(x,n,p,y);
+}
+
+bool SM2::in_nm(big __x, big __n, big __m)
+{
+    bool res1,res2;
+    res1 = (mr_compare(__x,__n) >= 0);//x >= 0
+    res2 = (mr_compare(__x,__m) <= 0);//x <= n
+    return res1&&res2; // >=n && <=m
 }
 
 bool SM2::in_1n1(big __x)
 {
     char nn[65] = __nn__;
-    big cmp0;//0
+    big cmp1;//1
     big cmpn;//n
-    bool res1,res2;
-    cmp0 = mirvar(0);
+    cmp1 = mirvar(1);
     cmpn = mirvar(0);
+
+    SM2::stringsub1(nn,65,nn);//n = n - 1
+
     cinstr(cmpn,nn);
-    res1 = (mr_compare(__x,cmp0) > 0);//x > 0
-    res2 = (mr_compare(__x,cmpn) < 0);//x < n
-    mirkill(cmp0);
+
+    bool res = SM2::in_nm(__x,cmp1,cmpn);
+
+    mirkill(cmp1);
     mirkill(cmpn);
-    return res1&&res2; // >=0 && <n
+    return res;
+}
+
+bool SM2::in_0p1(big __x)
+{
+    char pn[65] = __pn__;
+    bool res;
+    big cmp0;
+    big cmpp;
+    cmp0 = mirvar(0);
+    cmpp = mirvar(0);
+
+    SM2::stringsub1(pn,65,pn);
+    
+    cinstr(cmpp,pn);
+
+    res = SM2::in_nm(__x,cmp0,cmpp);
+
+    mirkill(cmp0);
+    mirkill(cmpp);
+    return res;
 }
 
 bool SM2::is_n(big __x)

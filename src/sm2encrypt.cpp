@@ -68,7 +68,7 @@ int encryptMessage(char* message,int messagelen,char* xBn,char* yBn,char* emessa
             goto EXIT_FE;
         }
         //step 4
-        calP2(k,xB,yB,x2,y2);
+        calP(k,xB,yB,x2,y2);
         big_to_bytes(0,x2,(char*)x2b,FALSE);
         big_to_bytes(0,y2,(char*)y2b,FALSE);
         //step 5
@@ -168,7 +168,7 @@ int decryptMessage(char* emessage,int emessagelen,char* dBn,char* message)
     }
 
     //step 3
-    calP2(dB,x1,y1,x2,y2);
+    calP(dB,x1,y1,x2,y2);
     big_to_bytes(0,x2,(char*)x2b,FALSE);
     big_to_bytes(0,y2,(char*)y2b,FALSE);
     //step 4

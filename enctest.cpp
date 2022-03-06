@@ -12,15 +12,13 @@ int main(void)
 {
     char emessage[sizeof(message)+97];
     char dmessage[sizeof(message)];
-    if(encryptMessage(message,sizeof(message),xBn,yBn,emessage)
-            == -1)
-        {
+    if ( encryptMessage(message, sizeof(message), xBn, yBn, emessage)
+        == -1){
             std::cout << "ENC FAILURE" << std::endl;
             return 1;
         }
-    if(decryptMessage(emessage,sizeof(emessage),dBn,dmessage)
-            == -1)
-        {
+    if (decryptMessage(emessage, sizeof(emessage), dBn, dmessage)
+        == -1){
             std::cout << "DEC FAILURE" << std::endl;
             return 1;
         }

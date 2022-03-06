@@ -196,6 +196,3 @@ EXIT_FV:
     mirexit();
     return ret;
 }
-
-
-

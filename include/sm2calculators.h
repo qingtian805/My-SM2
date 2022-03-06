@@ -41,19 +41,62 @@ namespace SM2
     //计算s==((1 + dA)^ -1·(k - r·dA))mod n
     void cals(big k,big dA,big r,big s);
 
+    //计算椭圆曲线点P2(x2,y2) = [k]P1(x1,y1)
+    //计算椭圆曲线点P2(x2,y2) = [k]PB(xB,yB)
+    //如果是压缩点，则将x同时作为y传入
+    void calP(big k,big x1,big y1,big x2,big y2);
+    
     //计算签名公钥 P1(x1,y1) = [k]G
+    //是calP的封装
+    //输入：k
     //输出：x1 取出的坐标x值
     //     y1 取出的坐标y值
-    void calP1(big k,big x1,big y1);
+    //如果是压缩点，则将x同时作为y传入
+    void calP1(big k, big x1, big y1);
+
+    //计算椭圆曲线点 P2(x2,y2)=[n]P1(x1,y1)
+    //是calP的封装
+    //输入：x1 y1
+    //输出：x2 y2
+    void calnP(big x1, big y1, big x2, big y2);
 
     //计算椭圆曲线点P1`(x1`,y1`)=[s`]G+[t]PA
+    //输入：s t xA yA
+    //输出：x1 y1
+    //如果是压缩点，则将x同时作为y传入
     void cal_P1(big s,big t,big xA,big yA,big x1,big y1);
 
-    //计算椭圆曲线点P2(x2,y2) = [k]PB(xB,yB)
-    void calP2(big k,big xB,big yB,big x2,big y2);
+    //计算y = x^3 + ax + b(mod p)
+    //输入：x a b
+    //输出：y
+    //从系统参数中提取：p
+    void calfumula_1(big x,big a,big b,big y);
+
+    //计算y = x^3 + ax + b(mod p)
+    //是calfumula_1的进一步封装
+    //输入：x
+    //输出：y
+    //从系统参数中提取:a b p
+    void calfumula1(big x,big y);
+
+    //计算y = x^n mod p
+    //是对power函数的封装
+    //输入：x n
+    //输出：y
+    //从系统中获取 p
+    void pow(big x,long n,big y);
     
-    //返回：判断输入给出数值是否处于[1,n-1]，在则返回真
+    //输入：x 要判断的数值
+    //     n 区间小
+    //     m 区间大
+    //输出：x 是否处于区间 [n,m] 内，是则返回真
+    bool in_nm(big __x, big __n, big __m);
+
+    //返回：判断输入数值是否处于[1,n-1]，在则返回真
     bool in_1n1(big __x);
+
+    //返回：判断输入数值是否处于[1,p-1]，在则返回真
+    bool in_0p1(big __x);
 
     //返回：判断输入是否等于n，相等则返回真
     bool is_n(big __x);
