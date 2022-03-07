@@ -1,7 +1,3 @@
-//extern "C"
-//{
-#include "miracl.h"
-//}
 #include <math.h>
 #include <memory.h>
 #include "sm3.h"
