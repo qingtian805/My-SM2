@@ -3,7 +3,8 @@ extern "C"
 #include "miracl.h"
 }
 #include "sm2calculators.h"
-#include "sm2parameter.h"
+//#include "sm2parameter.h"
+#include "sm2config.h"
 #include "sm2StreamString.h"
 #include <time.h>
 #include <memory.h>
@@ -29,15 +30,16 @@ void SM2::calE(byte* _message,int _mlen,big e)
 
 void SM2::genRandom(big k)
 {
-    char nn[65] = __nn__; 
+    //char nn[65] = __nn__; 
     big n;
     n = mirvar(0);
+    //extern sm2cfg *__SM2_GLOBAL_CONF__;
 
-    cinstr(n,nn);
+    cinstr(n,__SM2_GLOBAL_CONF__->N);
 
     do
     {
-        irand(time(NULL)+SEED);
+        irand(time(NULL)+__SM2_SEED__);
         bigrand(n,k);// 0 <= k < n
     }while(is_zero(k));//是0则重新生成
 
@@ -46,17 +48,18 @@ void SM2::genRandom(big k)
 
 void SM2::genRandom2(big k)
 {
-    char nn[65] = __nn__;
+    //char nn[65] = __nn__;
     big n;
     n = mirvar(0);
     
-    stringsub1(nn,64,nn);//n=n-1
+    //stringsub1(nn,64,nn);//n=n-1
 
-    cinstr(n,nn);
+    cinstr(n,__SM2_GLOBAL_CONF__->N);
+    decr(n,1,n);
     
     do
     {
-        irand(time(NULL)+SEED);
+        irand(time(NULL)+__SM2_SEED__);
         bigrand(n,k);// 0 <= k < n, n=n-1
     }while(is_zero(k));//是0则重新生成
 
@@ -65,12 +68,12 @@ void SM2::genRandom2(big k)
 
 void SM2::calrt(big er,big x1s,big rt)
 {
-    char nn[65] = __nn__;
+    //char nn[65] = __nn__;
     big n,tmp;
 
     n = mirvar(0);
     tmp = mirvar(0);
-    cinstr(n,nn);
+    cinstr(n,__SM2_GLOBAL_CONF__->N);
 
     add(x1s,er,tmp);//tmp = x1 + e
     divide(tmp,n,n);//tmp = tmp mod n
@@ -82,14 +85,14 @@ void SM2::calrt(big er,big x1s,big rt)
 
 void SM2::cals(big k,big dA,big r,big s)
 {
-    char nn[65] = __nn__;
+    //char nn[65] = __nn__;
     big tmp,und;
     big n;
 
     tmp = mirvar(0);
     und = mirvar(0);
     n = mirvar(0);
-    cinstr(n,nn);
+    cinstr(n,__SM2_GLOBAL_CONF__->N);
     
     incr(dA,1,und);//und = 1+dA
     xgcd(und,n,und,und,und);//und = und^-1 mod n
@@ -119,7 +122,7 @@ void SM2::calP(big k,big x1,big y1,big x2,big y2)
 
     epoint_set(x1,y1,0,p1);//设置点
     
-    ecurve_mult(k,p1,p2);//计算点乘
+    ecurve_mult(k,p1,p2);//计算点乘p2=[k]p1
 
     epoint_get(p2,x2,y2);//取出坐标
 
@@ -129,14 +132,14 @@ void SM2::calP(big k,big x1,big y1,big x2,big y2)
 
 void SM2::calP1(big k,big x1,big y1)
 {
-    char xGn[65] = __xGn__;
-    char yGn[65] = __yGn__;
+    //char xGn[65] = __xGn__;
+    //char yGn[65] = __yGn__;
     big xG,yG;//椭圆曲线基点
 
     xG = mirvar(0);//初始化参数
     yG = mirvar(0);
-    cinstr(xG,xGn);
-    cinstr(yG,yGn);
+    cinstr(xG,__SM2_GLOBAL_CONF__->Gx);
+    cinstr(yG,__SM2_GLOBAL_CONF__->Gy);
 
     calP(k,xG,yG,x1,y1);
 
@@ -146,11 +149,11 @@ void SM2::calP1(big k,big x1,big y1)
 
 void SM2::calnP(big x1 ,big y1, big x2, big y2)
 {
-    char nn[65] = __nn__;
+    //char nn[65] = __nn__;
     big n;
 
     n = mirvar(0);
-    cinstr(n,nn);
+    cinstr(n,__SM2_GLOBAL_CONF__->N);
 
     calP(n,x1,y1,x2,y2);
 
@@ -159,15 +162,15 @@ void SM2::calnP(big x1 ,big y1, big x2, big y2)
 
 void SM2::cal_P1(big s,big t,big xA,big yA,big x1,big y1)
 {
-    char xGn[65] = __xGn__;
-    char yGn[65] = __yGn__;
+    //char xGn[65] = __xGn__;
+    //char yGn[65] = __yGn__;
     big xG,yG;//椭圆曲线基点
     epoint *g,*pA,*p1;
 
     xG = mirvar(0);//初始化参数
     yG = mirvar(0);
-    cinstr(xG,xGn);
-    cinstr(yG,yGn);
+    cinstr(xG,__SM2_GLOBAL_CONF__->Gx);
+    cinstr(yG,__SM2_GLOBAL_CONF__->Gy);
 
     g = epoint_init();
     pA = epoint_init();
@@ -188,10 +191,10 @@ void SM2::cal_P1(big s,big t,big xA,big yA,big x1,big y1)
 
 void SM2::calfumula_1(big x,big a,big b,big y)
 {
-    char pn[65] = __pn__;
+    //char pn[65] = __pn__;
     big p;
     p = mirvar(0);
-    cinstr(p,pn);
+    cinstr(p,__SM2_GLOBAL_CONF__->P);
     power(x,3,p,y);//y=x^3 mod p
 
     add(y,b,y);//y=y+b
@@ -204,14 +207,14 @@ void SM2::calfumula_1(big x,big a,big b,big y)
 
 void SM2::calfumula1(big x,big y)
 {
-    char an[65] = __an__;
-    char bn[65] = __bn__;
+    //char an[65] = __an__;
+    //char bn[65] = __bn__;
     big a,b;
     a = mirvar(0);
     b = mirvar(0);
 
-    cinstr(a,an);
-    cinstr(b,bn);
+    cinstr(a,__SM2_GLOBAL_CONF__->A);
+    cinstr(b,__SM2_GLOBAL_CONF__->B);
 
     calfumula_1(x,a,b,y);
 
@@ -221,10 +224,10 @@ void SM2::calfumula1(big x,big y)
 
 void SM2::pow(big x,long n,big y)
 {
-    char pn[65] = __pn__;
+    //char pn[65] = __pn__;
     big p;
     p = mirvar(0);
-    cinstr(p,pn);
+    cinstr(p,__SM2_GLOBAL_CONF__->P);
 
     power(x,n,p,y);
 }
@@ -239,15 +242,16 @@ bool SM2::in_nm(big __x, big __n, big __m)
 
 bool SM2::in_1n1(big __x)
 {
-    char nn[65] = __nn__;
+    //char nn[65] = __nn__;
     big cmp1;//1
     big cmpn;//n
     cmp1 = mirvar(1);
     cmpn = mirvar(0);
 
-    SM2::stringsub1(nn,64,nn);//n = n - 1
+    //SM2::stringsub1(nn,64,nn);//n = n - 1
 
-    cinstr(cmpn,nn);
+    cinstr(cmpn,__SM2_GLOBAL_CONF__->N);
+    decr(cmpn,1,cmpn);
 
     bool res = SM2::in_nm(__x,cmp1,cmpn);
 
@@ -258,16 +262,17 @@ bool SM2::in_1n1(big __x)
 
 bool SM2::in_0p1(big __x)
 {
-    char pn[65] = __pn__;
+    //char pn[65] = __pn__;
     bool res;
     big cmp0;
     big cmpp;
     cmp0 = mirvar(0);
     cmpp = mirvar(0);
 
-    SM2::stringsub1(pn,64,pn);
+    //SM2::stringsub1(pn,64,pn);
     
-    cinstr(cmpp,pn);
+    cinstr(cmpp,__SM2_GLOBAL_CONF__->P);
+    decr(cmpp,1,cmpp);
 
     res = SM2::in_nm(__x,cmp0,cmpp);
 
@@ -278,11 +283,11 @@ bool SM2::in_0p1(big __x)
 
 bool SM2::is_n(big __x)
 {
-    char nn[65] = __nn__;
+    //char nn[65] = __nn__;
     big cmpn;
     bool res;
     cmpn = mirvar(0);
-    cinstr(cmpn,nn);
+    cinstr(cmpn,__SM2_GLOBAL_CONF__->N);
     res = (mr_compare(__x,cmpn) == 0);// == n
     mirkill(cmpn);
     return res;// == n

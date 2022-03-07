@@ -9,7 +9,8 @@ extern "C"
 #include "sm2type.h"
 #include "sm2init.h"
 #include "sm2calculators.h"
-#include "sm2parameter.h"
+//#include "sm2parameter.h"
+#include "sm2config.h"
 #include "sm2StreamString.h"
 
 using std::cout;
@@ -19,30 +20,32 @@ using namespace SM2;
 void genZA(char *ID,int IDlen,char *xAn,char *yAn,char* ZA)
 {
     //椭圆曲线算法参数赋值
-    char an[65] = __an__;
-    char bn[65] = __bn__;
-    char xGn[65] = __xGn__;
-    char yGn[65] = __yGn__;
+    byte a[32];
+    byte b[32];
+    byte xG[32];
+    byte yG[32];
+    byte xA[32];
+    byte yA[32];
     //函数内部数值
     char ENTLA[2];//可否使用union替代？
     char info[IDlen + 194] = "";//32 * 6 + 2 = 194
     int entlena = IDlen * 8;
     //将数据转换为字节串
-    stringToStream(an,64,(byte*)an);
-    stringToStream(bn,64,(byte*)bn);
-    stringToStream(xGn,64,(byte*)xGn);
-    stringToStream(yGn,64,(byte*)yGn);
-    stringToStream(xAn,64,(byte*)xAn);
-    stringToStream(yAn,64,(byte*)yAn);
+    stringToStream(__SM2_GLOBAL_CONF__->A,64,a);
+    stringToStream(__SM2_GLOBAL_CONF__->B,64,b);
+    stringToStream(__SM2_GLOBAL_CONF__->Gx,64,xG);
+    stringToStream(__SM2_GLOBAL_CONF__->Gy,64,yG);
+    stringToStream(xAn,64,xA);
+    stringToStream(yAn,64,yA);
     //计算ZA
     ENTLA[0] = entlena & 0xFF;
     ENTLA[1] = (entlena & 0xFF00) >> 8;
     memcpy(info,ENTLA,2);
     memcpy(info+2,ID,IDlen);
-    memcpy(info+IDlen+2,an,32);
-    memcpy(info+IDlen+34,bn,32);
-    memcpy(info+IDlen+66,xGn,32);
-    memcpy(info+IDlen+98,yGn,32);
+    memcpy(info+IDlen+2,a,32);
+    memcpy(info+IDlen+34,b,32);
+    memcpy(info+IDlen+66,xG,32);
+    memcpy(info+IDlen+98,yG,32);
     memcpy(info+IDlen+130,xAn,32);
     memcpy(info+IDlen+162,yAn,32);
     sm3((byte*)info,IDlen+194,(byte*)ZA);

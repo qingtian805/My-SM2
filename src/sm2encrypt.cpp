@@ -12,6 +12,7 @@ extern "C"
 #include "sm2calculators.h"
 #include "sm2KDF.h"
 #include "sm2StreamString.h"
+#include "sm2config.h"
 
 using std::cout;
 using std::endl;

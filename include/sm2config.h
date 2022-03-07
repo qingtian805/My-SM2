@@ -14,20 +14,34 @@
 #define __SM2_Gy__ "BC3736A2F4F6779C59BDCEE36B692153D0A9877CC62A474002DF32E52139F0A0"
 
 //SM2配置结构
-struct sm2cfg;
+struct sm2cfg{
+    int POINT_TYPE;
+    char P[65];
+    char A[65];
+    char B[65];
+    char N[65];
+    char Gx[65];
+    char Gy[65];
+};
+
+extern struct sm2cfg *__SM2_GLOBAL_CONF__;
 
 //系统内设置指针
-struct sm2cfg *__SM2_GLOBAL_CONF__;
+//struct sm2cfg *__SM2_GLOBAL_CONF__;
 
 //用户设置接口
 typedef sm2cfg sm2cfg;
 
 /*SM2系统设置初始化函数
- *输入：custom 一个sm2cfg结构指针。
+ *输入：sm2p 一个sm2cfg结构指针。
  *sm2cfg结构包含椭圆曲线参数以及点压缩方式定义
  *返回：int 0 初始化成功 -1 初始化失败
  */
-int sm2init( sm2cfg *custom );
+int sm2init( sm2cfg *sm2p );
 
+/*SM2系统退出函数
+ *输入：sm2p
+ */
+void sm2exit( sm2cfg *sm2p );
 
 #endif

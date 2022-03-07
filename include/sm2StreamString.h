@@ -16,7 +16,7 @@ namespace SM2
     //输入：string 字符串
     //  stringlen 字符串去\0长度(字节)
     //输出：stream 比特流
-    //请确保比特流区域为大于stringlen/2的最小整数
+    //请确保比特流区域大于stringlen/2的最小整数
     void stringToStream(char* string,int stringlen,byte* stream);
 
     //输入：string 表示16进制的字符串
