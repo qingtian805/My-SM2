@@ -4,12 +4,12 @@
 
 struct sm2cfg *__SM2_GLOBAL_CONF__;
 
-int sm2init(sm2cfg *sm2p = NULL)
+sm2cfg *sm2init(void)
 {
-    sm2p = ( sm2cfg* ) malloc ( sizeof(sm2cfg) );
+    sm2cfg *sm2p = ( sm2cfg* ) malloc ( sizeof(sm2cfg) );
     //内存不足，分配失败
     if ( sm2p == NULL ){
-        return -1;
+        return sm2p;
     }
     //将默认参数输入设置
     sm2p->POINT_TYPE = 4;
@@ -23,5 +23,10 @@ int sm2init(sm2cfg *sm2p = NULL)
     //在系统中存储设置的指针
     __SM2_GLOBAL_CONF__ = sm2p;
 
-    return 0;
+    return sm2p;
+}
+
+void sm2exit(sm2cfg *sm2p)
+{
+    free(sm2p);
 }

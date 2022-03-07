@@ -35,12 +35,12 @@ typedef sm2cfg sm2cfg;
 /*SM2系统设置初始化函数
  *输入：sm2p 一个sm2cfg结构指针。
  *sm2cfg结构包含椭圆曲线参数以及点压缩方式定义
- *返回：int 0 初始化成功 -1 初始化失败
+ *返回：sm2cfg* 非NULL 初始化成功 NULL 初始化失败
  */
-int sm2init( sm2cfg *sm2p );
+sm2cfg *sm2init( void );
 
 /*SM2系统退出函数
- *输入：sm2p
+ *输入：sm2p 一个由sm2init初始化的SM2系统设置地址
  */
 void sm2exit( sm2cfg *sm2p );
 
