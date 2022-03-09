@@ -43,11 +43,18 @@ int main(void)
     memset(comkey,0,17);
 
     //step0
-    //初始化sm4系统
+    //初始化sm2 sm4系统
     sm4 s;
     s.setType(sm4::ECB);
     s.setKey(key);
     s.setIv("1234567890123456");//无用设置，用来跳过检查
+    
+    sm2cfg *sm2p;
+    sm2p = sm2init();
+    if (sm2p == NULL){
+        std::cout << "System init failed!" << std::endl;
+        return 1;
+    }
 
     //创建socket
     int sock = socket(AF_INET, SOCK_STREAM,0);
@@ -196,6 +203,7 @@ int main(void)
     std::cout << "Key Exchanged. Establishing communication" << std::endl;
 
 EXIT:
+    sm2exit(sm2p);
     close(sock);
     return 0;
 }

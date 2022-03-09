@@ -3,6 +3,8 @@
 
 #define __SM2_DEBUG_ENC__
 
+#include "sm2config.h"
+
 //SM2椭圆曲线算法信息加密函数
 //输入：message 被加密的信息
 //  messagelen 加密信息长度

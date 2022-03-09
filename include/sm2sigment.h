@@ -1,6 +1,8 @@
 #ifndef __SM2_SIG_H__
 #define __SM2_SIG_H__
 
+#include "sm2config.h"
+
 //计算用户其他信息函数（ZA）
 //输入：ID 发送者ID
 //  IDlen 发送者ID长度(字节)

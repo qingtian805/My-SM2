@@ -38,10 +38,18 @@ int main(void)
     std::string sm4code;
 
     //step 0 init
-    //初始化sm4系统
+    //初始化sm2 sm4系统和socket套接字
     sm4 s;
     s.setType(sm4::ECB);
     s.setIv("1234567890123456");//无用设置，用来跳过检查
+
+    sm2cfg *sm2p;
+    sm2p = sm2init();
+    if (sm2p == NULL){
+        std::cout << "System init failed!" << std::endl;
+        return 1;
+    }
+
     int serv_sock = socket(AF_INET,SOCK_STREAM,IPPROTO_TCP);
 
     sockaddr_in serv_addr;
@@ -170,6 +178,7 @@ int main(void)
     write(clnt_sock, &data, sizeof(data));
 
 EXIT:
+    sm2exit(sm2p);
     close(serv_sock);
     close(clnt_sock);
     return 0;

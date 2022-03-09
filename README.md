@@ -7,8 +7,8 @@ This repo stores its code.
 
 ### Prime Folder ./
 
-**certify_server.cpp** A very simple usage of my-sm2, SM3 and SM4.This file is its server program source.  
-**certify_client.cpp** A very simple usage of my-sm2, SM3 and SM4.This file is its client program source.  
+**certify_server.cpp** A very simple usage of My-SM2, SM3 and SM4.This file is its server program source.  
+**certify_client.cpp** A very simple usage of My-SM2, SM3 and SM4.This file is its client program source.  
 **CMakeList.txt** CMake list, of my project. If you don`t know how it works, please refer to CMake.  
 **notes.md** A studing note of basic ECC knowledge.  
 **OTPclient.cpp** OTP client main file, using TOTP.cpp.  
@@ -19,8 +19,9 @@ This repo stores its code.
 ### Source ./src
 
 **sm2culculators.cpp** All functions calculates number in sm2.  
+**sm2config.cpp** General config function. It makes My-SM2 changes its parameters.  
 **sm2encrypt.cpp** Main functions of SM2 encryption.  
-**sm2init.cpp** Initalizing funcions.  
+**sm2init.cpp** MIRACL initalizing funcions. Helps simplifying MIRACL init journels.  
 **sm2KDF.cpp** KDF assisting function.  
 **sm2keymgr.cpp** Key pair generating function and pubkey verify function.  
 **sm2old.cpp** The main file of my project, contines the final version of My-SM2 when the summer pratical training over.  
@@ -35,11 +36,12 @@ This repo stores its code.
 **mir\*.\*** [MIRACL](https://github.com/miracl/MIRACL) lib files. Using for educational propose. In replace of [uint256_t](https://github.com/calccrypto/uint256_t) which was used to deal with bignum calculations and been deleted now.  
 **sm2.h** The master include file. Includes all main functions.  
 **sm2calculators.h** Header of sm2calculators.cpp.  
+**sm2config.h** Header of sm2config.cpp.  
 **sm2encrypt.h** Header of sm2encrypt.cpp.  
-**sm2init.h** Header of  
+**sm2init.h** Header of sm2init.cpp.  
 **sm2KDF.h** Header of sm2KDF.cpp.  
 **sm2keymgr.h** Header of sm2keymgr.cpp.  
-**sm2parameter.h** Header contains parameters used in SM2 system.  
+**sm2parameter.h** Header contains parameters used in SM2 system. Now replaced with sm2config module.  
 **sm2sigment.h** Header of sm2sigment.cpp.  
 **sm2StreamString.h** Header of sm2StreamString.cpp.  
 **sm2type.h** Header contains self defined types of my SM2 system.  

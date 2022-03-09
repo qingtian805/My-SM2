@@ -4,6 +4,7 @@
 extern "C"{
 #include"miracl.h"
 }
+#include "sm2config.h"
 
 //生成SM2算法密钥对
 //输出：dn[65] 生成的私钥
