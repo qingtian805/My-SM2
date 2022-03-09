@@ -115,7 +115,7 @@ LOW:
         }
     }
 }
-
+/*
 void SM2::stringsub1(char* string,int stringlen,char* ostring)
 {
     int pn = stringlen - 1;
@@ -145,6 +145,7 @@ void SM2::stringsub1(char* string,int stringlen,char* ostring)
         }
     }
 }
+*/
 
 #ifdef __SM2_DEBUG_SS__
 using namespace std;
