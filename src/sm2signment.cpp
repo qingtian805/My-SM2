@@ -9,7 +9,6 @@ extern "C"
 #include "sm2type.h"
 #include "sm2init.h"
 #include "sm2calculators.h"
-//#include "sm2parameter.h"
 #include "sm2config.h"
 #include "sm2StreamString.h"
 
@@ -17,7 +16,7 @@ using std::cout;
 using std::endl;
 using namespace SM2;
 
-void genZA(char *ID,int IDlen,char *xAn,char *yAn,char* ZA)
+void genZA(char *ID, int IDlen, char *xAn, char *yAn, char *ZA)
 {
     //椭圆曲线算法参数赋值
     byte a[32];
@@ -52,12 +51,11 @@ void genZA(char *ID,int IDlen,char *xAn,char *yAn,char* ZA)
     streamToString((byte*)ZA,32,ZA);
 }
 
-int genSignment(char* ZAn,char* dAn,unsigned char* message,int messagelen,char* rn,char* sn)
+int genSignment(char *ZAn,char *dAn,unsigned char *message,int messagelen,char *rn,char *sn)
 {
     //init MIRACL
     miracl *mip;
-    if(! init_miracl(mip))
-    {
+    if(! init_miracl(mip)){
         cout << "MIRACL INIT FALTAL" << endl;
         return -1;
     }
@@ -70,6 +68,7 @@ int genSignment(char* ZAn,char* dAn,unsigned char* message,int messagelen,char* 
     big r;
     big s;
     big dA;
+
     rk = mirvar(0);
     e = mirvar(0);
     k = mirvar(0);
@@ -77,19 +76,18 @@ int genSignment(char* ZAn,char* dAn,unsigned char* message,int messagelen,char* 
     r = mirvar(0);
     s = mirvar(0);
     dA = mirvar(0);
-    cinstr(dA,dAn);
+
+    cinstr(dA, dAn);
     byte _message[messagelen + 32];
 
     //step 1
-    gen_Message(ZAn,message,messagelen,_message);
+    gen_Message(ZAn, message, messagelen, _message);
 
     //step 2
-    calE(_message,messagelen+32,e);
+    calE(_message, messagelen + 32, e);
 
-    do
-    {
-        do
-        {
+    do {
+        do {
             //step 3
             genRandom(k);
 
@@ -100,15 +98,15 @@ int genSignment(char* ZAn,char* dAn,unsigned char* message,int messagelen,char* 
             calrt(e,x1,r);
 
             add(r,k,rk);//rk = r + k
-        }while( is_zero(r) || is_n(rk));
+        } while (is_zero(r) || is_n(rk));
         //step 6
         cals(k,dA,r,s);
-    }while(is_zero(s));
+    } while (is_zero(s));
 
-    big_to_bytes(0,r,rn,FALSE);
-    big_to_bytes(0,s,sn,FALSE);
-    streamToString((byte*)rn,32,rn);
-    streamToString((byte*)sn,32,sn);
+    big_to_bytes(0, r, rn, FALSE);
+    big_to_bytes(0, s, sn, FALSE);
+    streamToString((byte*)rn, 32, rn);
+    streamToString((byte*)sn, 32, sn);
 
 EXIT_FS:
     mirkill(rk);
@@ -122,7 +120,7 @@ EXIT_FS:
     return 0;
 }
 
-bool verifySignment(char* ZAn,char* xAn,char* yAn,unsigned char* message,int messagelen,char* rn,char* sn)
+bool verifySignment(char *ZAn,char *xAn,char *yAn,unsigned char *message,int messagelen,char *rn,char *sn)
 {
     miracl *mip;
     if(! init_miracl(mip))
@@ -133,10 +131,13 @@ bool verifySignment(char* ZAn,char* xAn,char* yAn,unsigned char* message,int mes
     init_ecruve();
 
     int ret = 0;
-    big r,s;
+    big r;
+    big s;
     big e;
     big t;
-    big xA,yA,x1;
+    big xA;
+    big yA;
+    big x1;
     big R;
     r = mirvar(0);
     s = mirvar(0);
@@ -146,48 +147,41 @@ bool verifySignment(char* ZAn,char* xAn,char* yAn,unsigned char* message,int mes
     yA = mirvar(0);
     x1 = mirvar(0);
     R = mirvar(0);
-    cinstr(r,rn);
-    cinstr(s,sn);
-    cinstr(xA,xAn);
-    cinstr(yA,yAn);
-    byte _message[messagelen+32];
+    cinstr(r, rn);
+    cinstr(s, sn);
+    cinstr(xA, xAn);
+    cinstr(yA, yAn);
+    byte _message[messagelen + 32];
 
     //step1
-    if(! in_1n1(r))//r 不在 [1,n-1] 则不通过
-    {
+    if (! in_1n1(r))//r 不在 [1,n-1] 则不通过
         goto EXIT_FV;
-    }
 
     //step2
-    if(! in_1n1(s))//s 不在 [1,n-1] 则不通过
-    {
+    if (! in_1n1(s))//s 不在 [1,n-1] 则不通过
         goto EXIT_FV;
-    }
 
     //step3
-    gen_Message(ZAn,message,messagelen,_message);
+    gen_Message(ZAn, message, messagelen, _message);
 
     //step4
-    calE(_message,messagelen+32,e);
+    calE(_message, messagelen + 32, e);
 
     //step5
-    calrt(r,s,t);
-    if(is_zero(t))//t = 0，则不通过
-    {
+    calrt(r, s, t);
+    if (is_zero(t))//t = 0，则不通过
         goto EXIT_FV;
-    }
 
     //step6
-    cal_P1(s,t,xA,yA,x1,NULL);
+    cal_P1(s, t, xA, yA, x1, NULL);
 
     //step7
-    calrt(e,x1,R);
-    if(! is_equal(R,r))//R != r，则不通过
-    {
+    calrt(e, x1, R);
+    if (! is_equal(R, r))//R != r，则不通过
         goto EXIT_FV;
-    }
 
     ret = 1;
+    
 EXIT_FV:
     mirkill(r);
     mirkill(s);

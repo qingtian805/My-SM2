@@ -18,26 +18,30 @@ using std::cout;
 using std::endl;
 using namespace SM2;
 
-int encryptMessage(char* message,int messagelen,char* xBn,char* yBn,char* emessage)
+int encryptMessage(char *message, int messagelen, char *xBn, char *yBn, char *emessage)
 {
     miracl *mip;
-    if(! init_miracl(mip))
-    {
+    if (!init_miracl(mip)){
         cout << "MIRACL INIT FALTAL" << endl;
         return -1;
     }
     init_ecruve();
 
     int ret = -1;
-    byte x1b[32],y1b[32];//p1的比特串形态
-    byte x2b[32],y2b[32];//p2的比特串形态
+    byte x1b[32];
+    byte y1b[32];//p1的比特串形态
+    byte x2b[32];
+    byte y2b[32];//p2的比特串形态
     byte key[messagelen];//KDF生成的密钥t，也作为加密后的C2
-    byte hash[64+messagelen];//等待hash的数据，用于计算C3和KDF
+    byte hash[64 + messagelen];//等待hash的数据，用于计算C3和KDF
     byte C3[32];
     big k;//随机数
-    big x1,y1;
-    big xB,yB;//B的公钥
-    big x2,y2;
+    big x1;
+    big y1;
+    big xB;
+    big yB;//B的公钥
+    big x2;
+    big y2;
     epoint* pB;//B的公钥
     k = mirvar(0);
     x1 = mirvar(0);
@@ -52,8 +56,7 @@ int encryptMessage(char* message,int messagelen,char* xBn,char* yBn,char* emessa
     cinstr(xB,xBn);//初始化pB用于判断是否位于无限远点
     cinstr(yB,yBn);
 
-    do
-    {
+    do {
         //step 1
         genRandom(k);
         
@@ -61,39 +64,42 @@ int encryptMessage(char* message,int messagelen,char* xBn,char* yBn,char* emessa
         calP1(k,x1,y1);
         big_to_bytes(0,x1,(char*)x1b,FALSE);
         big_to_bytes(0,y1,(char*)y1b,FALSE);
+        
         //step 3
         epoint_set(xB,yB,0,pB);
-        if(point_at_infinity(pB))
-        {
+        if (point_at_infinity(pB)){
             cout << "ERROR! B`s public key is invalid!" << endl;
             goto EXIT_FE;
         }
+        
         //step 4
-        calP(k,xB,yB,x2,y2);
-        big_to_bytes(0,x2,(char*)x2b,FALSE);
-        big_to_bytes(0,y2,(char*)y2b,FALSE);
+        calP(k, xB, yB, x2, y2);
+        big_to_bytes(0, x2, (char*)x2b, FALSE);
+        big_to_bytes(0, y2, (char*)y2b, FALSE);
+        
         //step 5
-        memcpy(hash,x2b,32);
-        memcpy(hash+32,y2b,32);
-        KDF((char*)hash,64,messagelen*8,(char*)key);
-    }while(is_allzero(key,messagelen));
+        memcpy(hash, x2b, 32);
+        memcpy(hash + 32, y2b, 32);
+        KDF((char*)hash, 64, messagelen*8, (char*)key);
+    } while (is_allzero(key, messagelen));
+    
     //step 6
-    for(int i=0;i<messagelen;i++)
-    {
+    for (int i=0; i<messagelen; i++)
         key[i] = message[i] ^ key[i];
-    }
+    
     //step 7
-    memcpy(hash+32,message,messagelen);
-    memcpy(hash+32+messagelen,y2b,32);
-    sm3(hash,messagelen+64,C3);
+    memcpy(hash + 32, message, messagelen);
+    memcpy(hash + 32 + messagelen, y2b, 32);
+    sm3(hash, messagelen + 64, C3);
+    
     //step 8
     emessage[0] = 4;//C1
-    memcpy(emessage+1,x1b,32);
-    memcpy(emessage+33,y1b,32);
+    memcpy(emessage+1, x1b, 32);
+    memcpy(emessage+33, y1b, 32);
 
-    memcpy(emessage+65,C3,32);
+    memcpy(emessage+65, C3, 32);
 
-    memcpy(emessage+97,key,messagelen);
+    memcpy(emessage+97, key, messagelen);
 
     ret = 0;
 EXIT_FE:
@@ -108,11 +114,10 @@ EXIT_FE:
     return ret;
 }
 
-int decryptMessage(char* emessage,int emessagelen,char* dBn,char* message)
+int decryptMessage(char *emessage, int emessagelen, char *dBn, char *message)
 {
     miracl *mip;
-    if(! init_miracl(mip))
-    {
+    if (! init_miracl(mip)){
         cout << "MIRACL INIT FALTAL" << endl;
         return -1;
     }
@@ -127,9 +132,11 @@ int decryptMessage(char* emessage,int emessagelen,char* dBn,char* message)
     byte hash[64+messagelen];//等待hash计算的数值
     byte key[messagelen];//KDF生成的密钥t，也作为解密后的C2
     byte u[32];
-    big x1,y1;
+    big x1;
+    big y1;
     big dB;
-    big x2,y2;
+    big x2;
+    big y2;
     epoint* p1;
     x1 = mirvar(0);
     y1 = mirvar(0);
@@ -141,13 +148,12 @@ int decryptMessage(char* emessage,int emessagelen,char* dBn,char* message)
     cinstr(dB,dBn);
 
     //step 1 功能:取出曲线点并验证有效性 等待被替换
-    switch (emessage[0])
-    {
+    switch (emessage[0]){
     case 4:
-        streamToString((byte*)emessage+1,32,x1n);
-        streamToString((byte*)emessage+33,32,y1n);
-        cinstr(x1,x1n);
-        cinstr(y1,y1n);
+        streamToString((byte*)emessage + 1, 32, x1n);
+        streamToString((byte*)emessage + 33, 32, y1n);
+        cinstr(x1, x1n);
+        cinstr(y1, y1n);
         break;
     
     default:
@@ -155,42 +161,41 @@ int decryptMessage(char* emessage,int emessagelen,char* dBn,char* message)
         goto EXIT_FD;
     }
 
-    if(! epoint_set(x1,y1,0,p1))
-    {
+    if (! epoint_set(x1, y1, 0, p1)){
         cout << "ERROR! Point is not on your ecruve!" << endl;
         goto EXIT_FD;
     }
 
     //step 2
-    if(point_at_infinity(p1))
-    {
+    if (point_at_infinity(p1)){
         cout << "ERROR! Using invalid public key!" << endl;
         goto EXIT_FD;
     }
 
     //step 3
-    calP(dB,x1,y1,x2,y2);
-    big_to_bytes(0,x2,(char*)x2b,FALSE);
-    big_to_bytes(0,y2,(char*)y2b,FALSE);
+    calP(dB, x1, y1, x2, y2);
+    big_to_bytes(0, x2, (char*)x2b, FALSE);
+    big_to_bytes(0, y2, (char*)y2b, FALSE);
+    
     //step 4
-    memcpy(hash,x2b,32);
-    memcpy(hash+32,y2b,32);
-    KDF((char*)hash,64,messagelen*8,(char*)key);
+    memcpy(hash, x2b, 32);
+    memcpy(hash+32, y2b, 32);
+    KDF((char*)hash, 64, messagelen * 8, (char*)key);
+    
     //step 5 and some of step 6
-    for(int i = 0;i<messagelen;i++)//hash[32~messagelen+32] = message
-    {
-        hash[32+i] = emessage[97+i] ^ key[i];
-    }
+    for (int i = 0;i<messagelen;i++)//hash[32~messagelen+32] = message
+        hash[32 + i] = emessage[97 + i] ^ key[i];
+    
     //step 6
-    memcpy(hash+messagelen+32,y2b,32);//hash + 32 + emessagelen - 97
-    sm3(hash,messagelen+64,u);
-    if(memcmp(u,emessage+65,32) != 0)
-    {
+    memcpy(hash + messagelen + 32, y2b, 32);//hash + 32 + emessagelen - 97
+    sm3(hash, messagelen + 64, u);
+    if (memcmp(u, emessage + 65, 32) != 0){
         cout << "ERROR! Message may be modified!" << endl;
         goto EXIT_FD;
     }
+    
     //step 7
-    memcpy(message,hash+32,messagelen);
+    memcpy(message, hash + 32, messagelen);
 
     ret = 0;
 EXIT_FD:

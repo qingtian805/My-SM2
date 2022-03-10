@@ -11,13 +11,13 @@ extern "C"{
 //     Pxn[65] 生成的公钥 的x值
 //     Pyn[65] 生成的公钥 的y值
 //返回：int 0 密钥对生成成功 -1 出现错误
-int gen_keypair(char* dn, char* Pxn, char* Pyn);
+int gen_keypair(char *dn, char *Pxn, char *Pyn);
 
 //公钥验证算法
 //输入：Pxn[65] 公钥的x值
 //     Pyn[65] 公钥的y值
 //返回：int 1 公钥通过验证 0 公钥未通过验证 -1 出现错误
-int verify_pubkey(char* Pxn, char* Pyn);
+int verify_pubkey(char *Pxn, char *Pyn);
 
 namespace SM2
 {

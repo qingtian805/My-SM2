@@ -13,13 +13,13 @@ namespace SM2
     //  message 签名信息，字节串
     //  mlen 签名信息长度(字节)
     //输出：_message  上划线M的对应值
-    void gen_Message(char* ZA,byte* message,int mlen,byte* _message);
+    void gen_Message(char *ZA, byte *message, int mlen, byte *_message);
 
     //计算e = H256(_M)，并转化整数
     //输入：_message 上划线M的对应值
     //  _mlen 上划线M的长度(字节)
     //输出：e 转换为整数后的e
-    void calE(byte* _message,int _mlen,big e);
+    void calE(byte *_message, int _mlen, big e);
 
     //生成随机数k in [1,n-1]
     //编译器定义：SEED 随机数生成种子
@@ -36,15 +36,15 @@ namespace SM2
     //计算r = (e + x1)mod n
     //计算R = (e`+ x1`)mod n
     //计算t = (r`+ s`)mod n
-    void calrt(big er,big x1s,big rt);
+    void calrt(big er, big x1s, big rt);
 
     //计算s==((1 + dA)^ -1·(k - r·dA))mod n
-    void cals(big k,big dA,big r,big s);
+    void cals(big k, big dA, big r, big s);
 
     //计算椭圆曲线点P2(x2,y2) = [k]P1(x1,y1)
     //计算椭圆曲线点P2(x2,y2) = [k]PB(xB,yB)
     //如果是压缩点，则将x同时作为y传入
-    void calP(big k,big x1,big y1,big x2,big y2);
+    void calP(big k, big x1, big y1, big x2, big y2);
     
     //计算签名公钥 P1(x1,y1) = [k]G
     //是calP的封装
@@ -64,27 +64,27 @@ namespace SM2
     //输入：s t xA yA
     //输出：x1 y1
     //如果是压缩点，则将x同时作为y传入
-    void cal_P1(big s,big t,big xA,big yA,big x1,big y1);
+    void cal_P1(big s, big t, big xA, big yA, big x1, big y1);
 
     //计算y = x^3 + ax + b(mod p)
     //输入：x a b
     //输出：y
     //从系统参数中提取：p
-    void calfumula_1(big x,big a,big b,big y);
+    void calfumula_1(big x, big a, big b, big y);
 
     //计算y = x^3 + ax + b(mod p)
     //是calfumula_1的进一步封装
     //输入：x
     //输出：y
     //从系统参数中提取:a b p
-    void calfumula1(big x,big y);
+    void calfumula1(big x, big y);
 
     //计算y = x^n mod p
     //是对power函数的封装
     //输入：x n
     //输出：y
     //从系统中获取 p
-    void pow(big x,long n,big y);
+    void pow(big x, long n, big y);
     
     //输入：x 要判断的数值
     //     n 区间小
@@ -108,7 +108,7 @@ namespace SM2
     bool is_equal(big __x,big __y);
 
     //返回：判断字节串是否为全0,是则返回真
-    bool is_allzero(byte* Bs,int lenB);
+    bool is_allzero(byte *Bs,int lenB);
 }
 
 #endif
