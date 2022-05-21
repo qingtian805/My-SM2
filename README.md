@@ -57,12 +57,26 @@ This repo stores its code.
 **README.md** README file of SM4 project by [tonyonce2017](https://github.com/tonyonce2017/SM4).
 
 ## Feature
-As for limited time and my poor code ability, the function of My-SM2 is very limited which means it can only verify keys.  
+The function of My-SM2 now is very limited and most of it functions is not tested.  
 You will be requested for plenty parameters to run the program, and finally, it will returns a pair of keys for signment when "Sing up" function is choosen or result for verifying when user chooses "Verify function".  
+
+## Useage
+
+### General setting
+sm2config.h includes all the configue functions in My-SM2. You needn`t to include it manually as My-SM2 designed to use a single include file for everything.  
+
+### Crypto Usage
+Include the sm2encrypt.h should do it.  
+
+### Signature Usage
+Not tested yet. If it`s finished, include the sm2sigment.h should do it.  
+
+### Full Usage
+Include the sm2.h should do it.
 
 ## New
 For my new learning term of 2021-2020-2, this repo will be reused for designing a user identificating system.  
-Some new features may be added.  
+Some new features may be added. I`m considering use the system as a simple demo of My-SM2.  
 
 ### Progress
 

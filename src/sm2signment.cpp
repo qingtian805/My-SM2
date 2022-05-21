@@ -59,7 +59,7 @@ int genSignment(char *ZAn,char *dAn,unsigned char *message,int messagelen,char *
         cout << "MIRACL INIT FALTAL" << endl;
         return -1;
     }
-    init_ecruve();
+    init_base();
 
     big rk;//r+k
     big e;
@@ -128,7 +128,7 @@ bool verifySignment(char *ZAn,char *xAn,char *yAn,unsigned char *message,int mes
         cout << "MIRACL INIT FALTAL" << endl;
         return -1;
     }
-    init_ecruve();
+    init_base();
 
     int ret = 0;
     big r;

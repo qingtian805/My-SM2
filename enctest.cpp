@@ -1,6 +1,5 @@
 #include <iostream>
 #include "sm2encrypt.h"
-#include "sm2config.h"
 #include <string.h>
 
 //标准第五章测试参数
@@ -35,12 +34,12 @@ int main(void)
         std::cout << "init SM2 failed!" << std::endl;
     }
 
-    strcpy(sm2p->P,pn);
-    strcpy(sm2p->A,an);
-    strcpy(sm2p->B,bn);
-    strcpy(sm2p->Gx,Gxn);
-    strcpy(sm2p->Gy,Gyn);
-    strcpy(sm2p->N,nn);
+    sm2config(sm2p->P, pn);
+    sm2config(sm2p->A, an);
+    sm2config(sm2p->B, bn);
+    sm2config(sm2p->Gx, Gxn);
+    sm2config(sm2p->Gy, Gyn);
+    sm2config(sm2p->N, nn);
 
     char emessage[sizeof(message)+97];
     char dmessage[sizeof(message)];

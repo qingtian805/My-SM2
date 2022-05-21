@@ -1,12 +1,16 @@
 extern "C"
 {
-#include"miracl.h"
+#include "miracl.h"
 }
 #include "sm2init.h"
-//#include "sm2parameter.h"
 #include "sm2config.h"
+#include "sm2calculators.h"
+#include <stdlib.h>
 
 using namespace SM2;
+
+#define PARA __SM2_GLOBAL_PARAMETER__
+#define CONF __SM2_GLOBAL_CONF__
 
 bool SM2::init_miracl(miracl *mip)
 {
@@ -18,21 +22,25 @@ bool SM2::init_miracl(miracl *mip)
     return true;
 }
 
-void SM2::init_ecruve(void)
+void SM2::init_base(void)
 {
-    big a;
-    big b;
-    big p;//椭圆曲线参数
-    a = mirvar(0);
-    b = mirvar(0);
-    p = mirvar(0);
-    cinstr(a, __SM2_GLOBAL_CONF__->A);
-    cinstr(b, __SM2_GLOBAL_CONF__->B);
-    cinstr(p, __SM2_GLOBAL_CONF__->P);
+    PARA = (sm2parameter*)malloc(sizeof(sm2parameter));
+    //分配参数内存
+    PARA->A = mirvar(0);
+    PARA->B = mirvar(0);
+    PARA->P = mirvar(0);
+    PARA->N = mirvar(0);
+    PARA->Gx = mirvar(0);
+    PARA->Gy = mirvar(0);
 
-    ecurve_init(a, b, p, MR_PROJECTIVE);//初始化椭圆曲线
+    //初始化参数
+    bytes_to_big(32, CONF->A, PARA->A);
+    bytes_to_big(32, CONF->B, PARA->B);
+    bytes_to_big(32, CONF->P, PARA->P);
+    bytes_to_big(32, CONF->N, PARA->N);
+    bytes_to_big(32, CONF->Gx, PARA->Gx);
+    bytes_to_big(32, CONF->Gy, PARA->Gy);
 
-    mirkill(a);
-    mirkill(b);
-    mirkill(p);
+    //初始化椭圆曲线
+    ecurve_init(PARA->A, PARA->B, PARA->P, MR_PROJECTIVE);
 }

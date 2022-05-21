@@ -77,7 +77,7 @@ int gen_keypair(char *dn, char *Pxn, char *Pyn)
         cout << "MIRACL INIT FALTAL" << endl;
         return -1;
     }
-    init_ecruve();
+    init_base();
 
     big d;
     big Px;
@@ -110,7 +110,7 @@ int verify_pubkey(char *Pxn, char *Pyn)
         cout << "MIRACL INIT FALTAL" << endl;
         return -1;
     }
-    init_ecruve();
+    init_base();
 
     int ret;
     big Px;

@@ -25,7 +25,7 @@ int encryptMessage(char *message, int messagelen, char *xBn, char *yBn, char *em
         cout << "MIRACL INIT FALTAL" << endl;
         return -1;
     }
-    init_ecruve();
+    init_base();
 
     int ret = -1;
     byte x1b[32];
@@ -121,7 +121,7 @@ int decryptMessage(char *emessage, int emessagelen, char *dBn, char *message)
         cout << "MIRACL INIT FALTAL" << endl;
         return -1;
     }
-    init_ecruve();
+    init_base();
 
     int ret = -1;
     int messagelen = emessagelen-97;//原信息长度
