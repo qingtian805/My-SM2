@@ -57,49 +57,49 @@ int encryptMessage(char *message, int messagelen, char *xBn, char *yBn, char *em
     cinstr(yB,yBn);
 
     do {
-        //step 1
+        //step 1 产生随机数k
         genRandom(k);
         
-        //step 2
+        //step 2 C1 = G点乘并将结果转换为比特串
         calP1(k,x1,y1);
         big_to_bytes(0,x1,(char*)x1b,FALSE);
         big_to_bytes(0,y1,(char*)y1b,FALSE);
         
-        //step 3
+        //step 3 计算公钥是否是无限远点
         epoint_set(xB,yB,0,pB);
         if (point_at_infinity(pB)){
             cout << "ERROR! B`s public key is invalid!" << endl;
             goto EXIT_FE;
         }
         
-        //step 4
+        //step 4 计算Pb点乘，将结果转换为比特串
         calP(k, xB, yB, x2, y2);
         big_to_bytes(0, x2, (char*)x2b, FALSE);
         big_to_bytes(0, y2, (char*)y2b, FALSE);
         
-        //step 5
+        //step 5 t = KDF(x2|y2)
         memcpy(hash, x2b, 32);
         memcpy(hash + 32, y2b, 32);
         KDF((char*)hash, 64, messagelen*8, (char*)key);
     } while (is_allzero(key, messagelen));
     
-    //step 6
+    //step 6 C2 = 异或计算
     for (int i=0; i<messagelen; i++)
         key[i] = message[i] ^ key[i];
     
-    //step 7
+    //step 7 C3 = hash(x2|message|y2)
     memcpy(hash + 32, message, messagelen);
     memcpy(hash + 32 + messagelen, y2b, 32);
     sm3(hash, messagelen + 64, C3);
     
-    //step 8
-    emessage[0] = 4;//C1
-    memcpy(emessage+1, x1b, 32);
-    memcpy(emessage+33, y1b, 32);
+    //step 8 输出密文 C1|C3|C2
+    emessage[0] = 4;//C1，按照标准，C1由两部分组成
+    memcpy(emessage+1, x1b, 32);//1 点压缩格式
+    memcpy(emessage+33, y1b, 32);//2 点数据
 
-    memcpy(emessage+65, C3, 32);
+    memcpy(emessage+65, C3, 32);//C3 密文哈希值
 
-    memcpy(emessage+97, key, messagelen);
+    memcpy(emessage+97, key, messagelen);//C2 密文
 
     ret = 0;
 EXIT_FE:
@@ -147,7 +147,7 @@ int decryptMessage(char *emessage, int emessagelen, char *dBn, char *message)
 
     cinstr(dB,dBn);
 
-    //step 1 功能:取出曲线点并验证有效性 等待被替换
+    //step 1 功能:取出C1曲线点并验证有效性 等待被替换
     switch (emessage[0]){
     case 4:
         streamToString((byte*)emessage + 1, 32, x1n);
@@ -166,27 +166,27 @@ int decryptMessage(char *emessage, int emessagelen, char *dBn, char *message)
         goto EXIT_FD;
     }
 
-    //step 2
+    //step 2 判断[h]p1是否为无限远点（默认h=1）
     if (point_at_infinity(p1)){
         cout << "ERROR! Using invalid public key!" << endl;
         goto EXIT_FD;
     }
 
-    //step 3
+    //step 3 P2=[dB]C1
     calP(dB, x1, y1, x2, y2);
     big_to_bytes(0, x2, (char*)x2b, FALSE);
     big_to_bytes(0, y2, (char*)y2b, FALSE);
     
-    //step 4
+    //step 4 t = KDF(x2|y2)
     memcpy(hash, x2b, 32);
     memcpy(hash+32, y2b, 32);
     KDF((char*)hash, 64, messagelen * 8, (char*)key);
     
-    //step 5 and some of step 6
+    //step 5 and some of step 6 异或计算C2 t 结果存放在Step6的指定位置
     for (int i = 0;i<messagelen;i++)//hash[32~messagelen+32] = message
         hash[32 + i] = emessage[97 + i] ^ key[i];
     
-    //step 6
+    //step 6 Hash(x2|M|y2)
     memcpy(hash + messagelen + 32, y2b, 32);//hash + 32 + emessagelen - 97
     sm3(hash, messagelen + 64, u);
     if (memcmp(u, emessage + 65, 32) != 0){
