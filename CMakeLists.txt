@@ -19,5 +19,3 @@ target_link_libraries(my-sm2-gektest miracl)
 target_link_libraries(my-sm2-enctest miracl)
 #target_link_libraries(my-sm2-sigtest miracl)
 #target_link_libraries(my-sm2-test miracl)
-
-add_subdirectory(use_sample)
