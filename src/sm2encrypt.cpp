@@ -110,6 +110,8 @@ EXIT_FE:
     mirkill(yB);
     mirkill(x2);
     mirkill(y2);
+    epoint_free(pB);
+    exit_base();
     mirexit();
     return ret;
 }
@@ -205,5 +207,7 @@ EXIT_FD:
     mirkill(x2);
     mirkill(y2);
     epoint_free(p1);
+    exit_base();
+    mirexit();
     return ret;
 }

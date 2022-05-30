@@ -44,3 +44,14 @@ void SM2::init_base(void)
     //初始化椭圆曲线
     ecurve_init(PARA->A, PARA->B, PARA->P, MR_PROJECTIVE);
 }
+
+void SM2::exit_base(void)
+{
+    mirkill(PARA->A);
+    mirkill(PARA->B);
+    mirkill(PARA->P);
+    mirkill(PARA->N);
+    mirkill(PARA->Gx);
+    mirkill(PARA->Gy);
+    free(PARA);
+}

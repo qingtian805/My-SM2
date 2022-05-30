@@ -16,13 +16,11 @@ using std::cout;
 using std::endl;
 using namespace SM2;
 
+#define CONF __SM2_GLOBAL_CONF__
+
 void genZA(char *ID, int IDlen, char *xAn, char *yAn, char *ZA)
 {
     //椭圆曲线算法参数赋值
-    byte a[32];
-    byte b[32];
-    byte xG[32];
-    byte yG[32];
     byte xA[32];
     byte yA[32];
     //函数内部数值
@@ -30,10 +28,6 @@ void genZA(char *ID, int IDlen, char *xAn, char *yAn, char *ZA)
     char info[IDlen + 194] = "";//32 * 6 + 2 = 194
     int entlena = IDlen * 8;
     //将数据转换为字节串
-    stringToStream(__SM2_GLOBAL_CONF__->A,64,a);
-    stringToStream(__SM2_GLOBAL_CONF__->B,64,b);
-    stringToStream(__SM2_GLOBAL_CONF__->Gx,64,xG);
-    stringToStream(__SM2_GLOBAL_CONF__->Gy,64,yG);
     stringToStream(xAn,64,xA);
     stringToStream(yAn,64,yA);
     //计算ZA
@@ -41,10 +35,10 @@ void genZA(char *ID, int IDlen, char *xAn, char *yAn, char *ZA)
     ENTLA[1] = (entlena & 0xFF00) >> 8;
     memcpy(info,ENTLA,2);
     memcpy(info+2,ID,IDlen);
-    memcpy(info+IDlen+2,a,32);
-    memcpy(info+IDlen+34,b,32);
-    memcpy(info+IDlen+66,xG,32);
-    memcpy(info+IDlen+98,yG,32);
+    memcpy(info+IDlen+2,CONF->A,32);
+    memcpy(info+IDlen+34,CONF->B,32);
+    memcpy(info+IDlen+66,CONF->Gx,32);
+    memcpy(info+IDlen+98,CONF->Gy,32);
     memcpy(info+IDlen+130,xAn,32);
     memcpy(info+IDlen+162,yAn,32);
     sm3((byte*)info,IDlen+194,(byte*)ZA);
@@ -116,6 +110,7 @@ EXIT_FS:
     mirkill(r);
     mirkill(s);
     mirkill(dA);
+    exit_base();
     mirexit();
     return 0;
 }
@@ -191,6 +186,7 @@ EXIT_FV:
     mirkill(yA);
     mirkill(x1);
     mirkill(R);
+    exit_base();
     mirexit();
     return ret;
 }
