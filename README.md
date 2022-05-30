@@ -7,11 +7,8 @@ This repo stores its code.
 
 ### Prime Folder ./
 
-**certify_server.cpp** A very simple usage of My-SM2, SM3 and SM4.This file is its server program source.  
-**certify_client.cpp** A very simple usage of My-SM2, SM3 and SM4.This file is its client program source.  
 **CMakeList.txt** CMake list, of my project. If you don`t know how it works, please refer to CMake.  
-**notes.md** A studing note of basic ECC knowledge.  
-**OTPclient.cpp** OTP client main file, using TOTP.cpp.  
+**notes.md** A studing note of basic ECC knowledge.   
 **README.md** Common ReadMe file.  
 **enctest.cpp** test file for encryption.  
 **gektest.cpp** test file for key generate and key managing.  
@@ -26,10 +23,8 @@ This repo stores its code.
 **sm2keymgr.cpp** Key pair generating function and pubkey verify function.  
 **sm2old.cpp** The main file of my project, contines the final version of My-SM2 when the summer pratical training over.  
 **sm2signment.cpp** Main functions of SM2 signment.  
-**sm2StreamString.cpp** Contains two functions converts stream and string.  
-**TOTP.cpp** C++ version of TOTP using SM3.  
+**sm2StreamString.cpp** Contains two functions converts stream and string.   
 **sm3.c** sm3 file by qq_36298219 at [CSDN](https://blog.csdn.net/qq_36298219/article/details/85926747).  
-**sm4.cpp** SM4 source file by [tonyonce2017](https://github.com/tonyonce2017/SM4).  
 
 ### Include file ./include/
 
@@ -46,15 +41,10 @@ This repo stores its code.
 **sm2StreamString.h** Header of sm2StreamString.cpp.  
 **sm2type.h** Header contains self defined types of my SM2 system.  
 **sm3.h** SM3 project by qq_36298219 and you can find them on [here](https://blog.csdn.net/qq_36298219/article/details/85926747).  
-**sm4.h** SM4 header by [tonyonce2017](https://github.com/tonyonce2017/SM4).  
 
 ### Libraries ./lib/
 
-**libmiracl.a** Complied MIRACL lib file.  
-
-### SM4-main ./SM4-main/
-
-**README.md** README file of SM4 project by [tonyonce2017](https://github.com/tonyonce2017/SM4).
+**libmiracl.a** Complied [MIRACL](https://github.com/miracl/MIRACL) lib file.   
 
 ## Feature
 The function of My-SM2 now is very limited and most of it functions is not tested.  
