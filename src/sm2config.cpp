@@ -36,7 +36,12 @@ void sm2config(char *sm2pp, char *pn)
 {
     char p[32];
     SM2::stringToStream(pn, 64, (unsigned char*)p);
-    sm2config_b(sm2pp, p);
+    memcpy(sm2pp, p, 32);
+}
+
+void sm2pointcfg(int sm2PointType)
+{
+    __SM2_GLOBAL_CONF__->POINT_TYPE = sm2PointType;
 }
 
 void sm2exit(sm2cfg *sm2p)

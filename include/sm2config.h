@@ -40,7 +40,7 @@ typedef sm2cfg sm2cfg;
 
 /*SM2系统设置初始化函数
  *输入：sm2p 一个sm2cfg结构指针。
- *sm2cfg结构包含椭圆曲线参数以及点压缩方式定义
+ *sm2cfg结构包含默认的椭圆曲线参数以及值为04点压缩方式定义
  *返回：sm2cfg* 非NULL 初始化成功 NULL 初始化失败
  */
 sm2cfg *sm2init(void);
@@ -56,6 +56,13 @@ void sm2config_b(char *sm2pp, char *p);
  *    char *p 要更改为的参数，使用字符串"ff"表示
  */
 void sm2config(char *sm2pp, char *p);
+
+/*SM2系统点模式设置函数（NOT WORKING）
+ *输入：int sm2PointType 一个指定的SM2点模式
+ *    程序会更改设置模块中的点模式
+ *    请使用给定的宏进行设置，除非你知道你在做什么
+ */
+void sm2pointcfg(int sm2PointType);
 
 /*SM2系统退出函数
  *输入：sm2p 一个由sm2init初始化的SM2系统设置地址
